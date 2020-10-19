@@ -1,0 +1,36 @@
+body {
+    background: #DDDDDD;
+}
+
+.navbar {
+    background-color: #800000;
+    color: white;
+}
+
+.page-container {
+    margin-top: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+@media (min-width: 576px){
+
+}
+@media (min-width: 768px){
+
+}
+/* @media (min-width: 992px){
+    #gameBoard {
+        height: 600px;
+        width: 600px;
+    }
+}
+@media (min-width: 1200px){
+    #gameBoard {
+        height: 600px;
+        width: 600px;
+    }
+} */
