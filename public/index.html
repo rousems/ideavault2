@@ -12,18 +12,74 @@
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-    <a class="navbar-brand" href="#"></a>
-    <!-- <div class="d-sm-none">X-Small</div>
-    <div class="d-none d-sm-block d-md-none">Small</div>
-    <div class="d-none d-md-block d-lg-none">Medium</div>
-    <div class="d-none d-lg-block d-xl-none">Large</div>
-    <div class="d-none d-xl-block">X-Large</div> -->
+      <button type="button" id="addbutton" class="btn btn-default btn-circle"><i class="material-icons">add</i></button>
+      
+      <!-- These will both be links and to the same place -->
+      <div id="username">Default User Name</div>
+      <img id="pfpimage" alt="profilepic" src="https://pbs.twimg.com/profile_images/1162710956218245120/L4b1guuv.jpg">
+
   </nav>
   <div id="mainPage" class="container page-container">
 
-  </div>
+    <div>
+      <!-- autofill/label later -->
+      <input type="text" id="searchbar" name="search">
+      <select name="sortByBox" id="sortBy">
+        <!-- Figure out the dropdown arrow later -->
+        <option value="by Date">by Date</option>
+        <option value="by Name">by Name<i class="arrow down"></i></option>
+        <option value="by Tag">by Tag<i class="arrow down"></i></option>
+        <option value="by Desc.">by Desc.<i class="arrow down"></i></option>
+      </select>
+    </div>
+
+    <div id="resultscontainer">
+      <div id="resultsbox">Results</div>
+      <div id="idea-container">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Idea title</h5>
+            <p class="card-text">This is the description of the idea</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="idea-container">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Idea title2</h5>
+            <p class="card-text">This is the description of the idea</p>
+          </div>
+        </div>
+      </div>
+      <div id="idea-container">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Idea title3</h5>
+            <p class="card-text">This is the description of the idea</p>
+          </div>
+        </div>
+      </div>
+      <div id="idea-container">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Idea title4</h5>
+            <p class="card-text">This is the description of the idea</p>
+          </div>
+        </div>
+      </div>
+      <div id="idea-container">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Idea title5</h5>
+            <p class="card-text">This is the description of the idea</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
+
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
