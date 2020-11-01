@@ -95,13 +95,14 @@ html,body {
   .down {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
+    margin: 2px;
   }
 
   .option {
       text-align: center;
   }
   #sortBy {
-    padding: 0px 5px;
+    padding: 1px 5px;
     text-align: right;
   }
 
