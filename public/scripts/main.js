@@ -120,6 +120,9 @@ rhit.resultsController = class {
 /** function and class syntax examples */
 rhit.main = function () {
 	console.log("Ready");
+	if (document.querySelector("#firstPage")){
+		window.location.href = "/login.html";
+	}
 	var rc = new rhit.resultsController();
 	console.log(rc);
 	//rc.addCard(5);
