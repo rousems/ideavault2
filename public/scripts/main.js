@@ -150,6 +150,7 @@ rhit.resultsController = class {
 					}
 				}
 				if (matched){
+					matched = false;
 					break;
 				}
 			}
