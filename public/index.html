@@ -22,20 +22,37 @@
   <div id="mainPage" class="container page-container">
 
     <div>
-      <!-- autofill/label later -->
-      <input type="text" id="searchbar" name="search">
+      <i class="arrow down"></i>
+      <!-- <span class="caret"></span> -->
       <select name="sortByBox" id="sortBy">
-        <!-- Figure out the dropdown arrow later -->
-        <option value="by Date">by Date</option>
-        <option value="by Name">by Name<i class="arrow down"></i></option>
-        <option value="by Tag">by Tag<i class="arrow down"></i></option>
-        <option value="by Desc.">by Desc.<i class="arrow down"></i></option>
-      </select>
+        Figure out the dropdown arrow later 
+       <option value="by Date">by Date<i class="arrow down"></i></option>
+       <option value="by Name">by Name<i class="arrow down"></i></option>
+       <option value="by Tag">by Tag<i class="arrow down"></i></option>
+       <option value="by Desc.">by Desc.<i class="arrow down"></i></option>
+     </select>
+
+     <!-- <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+     <span class="caret"></span></button>
+     <ul class="dropdown-menu">
+       <li>by Date</li>
+       <li>by Name</li>
+       <li>by Tag</li>
+       <li>by Desc</li>
+     </ul> -->
+     
+      <input type="text" id="searchbar" name="search">
+      
+
+     
+      
+      <button id=searchbutton>Search</button>
     </div>
 
     <div id="resultscontainer">
       <div id="resultsbox">Results</div>
-      <div id="idea-container">
+
+      <!-- <div id="idea-container">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Idea title</h5>
@@ -75,7 +92,7 @@
             <p class="card-text">This is the description of the idea</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
   </div>
