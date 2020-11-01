@@ -146,6 +146,29 @@ html,body {
     height: auto;
 }
 
+#bigProfilePic{
+  justify-content: center;
+  width:150px;
+  height:150px;
+  border-radius: 75px;
+  padding:10px;
+}
+
+#inputPassword,
+#inputUsername{
+  border: black solid 2px;
+  padding:2px;
+  margin:5px;
+}
+
+#loginButton,
+#addAccountButton,
+#signUpButton,
+#createAccountButton{
+  border: none;
+  background: hsl(0, 0%, 87%);
+}
+
 
 
 @media (min-width: 576px){
