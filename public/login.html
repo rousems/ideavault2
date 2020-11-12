@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.7.0/firebase-ui-auth.css" />
+  <script src="https://www.gstatic.com/firebasejs/ui/4.7.0/firebase-ui-auth.js"></script>
   <title>Idea Vault</title>
 </head>
 
 <body>
 
-  <div id="mainPage" class="container page-container">
+  <div id="login" class="container page-container">
 
     <img id="bigProfilePic" alt="Your Profile Picture" src="images/anonProfile.jpg">
     <div id="displayUsername">anonUser</div>
@@ -26,12 +27,12 @@
 
     <a id="loginButton" href="mainPage.html">Log in</a>
     <br>
-    <div>or sign in with</div>
+    <div>or</div>
+
     <div id="firebaseui-auth-container"></div>
-    <br>
+
     <a id="addAccountButton" href="addAccount.html">Log in with another account</a>
     <br>
-    <br> 
     <a id="signUpButton" href="accountSetUp.html">Sign Up</a>
 
   </div>
@@ -47,6 +48,7 @@
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
   <script src="scripts/main.js"></script>
+  
 </body>
 
 </html>

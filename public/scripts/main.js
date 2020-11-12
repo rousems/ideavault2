@@ -24,6 +24,7 @@ rhit.KEY_USERNAME = "username";
 rhit.resultsManager = null;
 rhit.ideaManager = null;
 rhit.currentUser = null;
+rhit.authManager = null;
 
 //from stackoverflow
 function htmlToElement(html){
@@ -150,7 +151,11 @@ rhit.resultsController = class {
 
 	beginListening(changeListener) {
 
+		
 		//let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
+		document.querySelector("#logout").onclick=(event)=>{
+			rhit.authManager.signOut();
+		};
 
 		if (this._uid) {
 			let query = this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50).where(rhit.KEY_AUTHOR, "==", this._uid);
@@ -360,13 +365,90 @@ rhit.resultsController = class {
 	}
 }
 
+rhit.AuthenticationManager = class{
+	constructor(){
+		this._user=null;
+	}
+	beginListening(changeListener){
+		firebase.auth().onAuthStateChanged((user)=>{
+			this._user = user;
+			changeListener();
+
+			if(user){
+				const displayName=user.displayName;
+				const email=user.email;
+				const phoneNumber=user.phoneNumber;
+				const photoURL=user.photoURL;
+				const isAnonymous=user.isAnonymous;
+				const uid=user.uid;
+				
+				console.log(displayName);
+				console.log(email);
+			}else{
+				console.log("There is no user signed in!");
+			}
+		});
+
+	}
+
+	signOut(){
+		firebase.auth().signOut().catch(function(error){
+			console.log("Sign Out error");
+		});
+	}
+
+	get isSignedIn(){
+		return !!this._user;
+	}
+	get uid() {
+		return this._user.uid;
+	}
+}
+
+rhit.checkForRedirects=function(){
+	if(document.querySelector("#login") && rhit.authManager.isSignedIn){
+		window.location.href = "/mainPage.html";
+	}
+	if(!document.querySelector("#login") && !rhit.authManager.isSignedIn && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
+		window.location.href = "/login.html";
+	}
+	// if(document.querySelector("#addAccountPage") && !rhit.authManager.isSignedIn){
+	// 	window.location.href = "/addAccount.html";
+	// }
+}
+
+rhit.startFirebaseUI = function(){
+	var uiConfig = {
+        signInSuccessUrl: '/',
+        signInOptions: [
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.EmailAuthProvider.PROVIDER_ID,
+		  firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+        ],
+        
+      };
+
+      const ui = new firebaseui.auth.AuthUI(firebase.auth());
+      
+      ui.start('#firebaseui-auth-container', uiConfig);
+}
 
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
 	console.log("Ready");
+
+	rhit.authManager = new rhit.AuthenticationManager();
+	rhit.authManager.beginListening(()=>{
+		console.log(rhit.authManager.isSignedIn);
+		rhit.checkForRedirects();
+		rhit.startFirebaseUI();
+	});
+
 	if (document.querySelector("#firstPage")){
 		window.location.href = "/login.html";
+		console.log("on the login page");
+	
 	}
 	
 	if (document.querySelector("#mainPage")){
