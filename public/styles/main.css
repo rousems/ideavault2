@@ -1,3 +1,11 @@
+:root {
+  --red: #F28D8D;
+  --white: #F2F2F2;
+  --lightblue: #5FB6D9;
+  --darkblue: #127CA6;
+  --blue: #117DBF;
+}
+
 body {
     background: hsl(0, 0%, 87%);
     color: black;
@@ -51,6 +59,11 @@ html,body {
     margin-left:0;
     border: 2px solid black;
     background-color: white;
+  }
+  
+  #backbutton {
+    margin-right:auto;
+    margin-left:0;
   }
 
   #pfpimage {
