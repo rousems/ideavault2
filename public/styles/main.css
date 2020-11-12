@@ -1,0 +1,195 @@
+body {
+    background: hsl(0, 0%, 87%);
+    color: black;
+    
+}
+
+html,body {
+    height: 100%;
+}
+
+.navbar {
+    background-color: #DDDDDD;
+    color: #000000;
+    float: right;
+}
+
+#navbar-link {
+    color: black;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 2px 0;
+    font-size: 12px;
+    /* line-height: 1.428571429; */
+    border-radius: 15px;
+  }
+
+  .btn-profile {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 0px 0;
+    font-size: 12px;
+    /* line-height: 1.428571429; */
+    border-radius: 15px;
+  }
+
+  #profilepicture {
+    margin-left:auto;
+    margin-right:0;
+    border: 2px solid black;
+    background-color: white;
+    background-size: 100%;
+  }
+
+  #addbutton {
+    margin-right:auto;
+    margin-left:0;
+    border: 2px solid black;
+    background-color: white;
+  }
+
+  #pfpimage {
+    width: 30px;
+    height: 30px;
+
+
+    border: 1px solid black;
+    /* line-height: 1.428571429; */
+    border-radius: 15px;
+  }
+
+  #username {
+    /* padding: 10px 10px 0px 10px; */
+    text-align:right;
+    padding: 0px 6px;
+    margin-right:0;
+  }
+
+  .arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+  }
+  
+  .right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+  }
+  
+  .left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+  }
+  
+  .up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+  }
+  
+  .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    margin: 2px;
+  }
+
+  .option {
+      text-align: center;
+  }
+  #sortBy {
+    padding: 1px 5px;
+    text-align: right;
+  }
+
+  #resultscontainer {
+    width: 95%;
+    height: 100%;
+    border:2px solid #000;
+    margin: 10px 0px;
+    position:relative;
+    overflow:hidden;
+    padding: 5px 10px;
+    
+  }
+
+  #resultsbox {
+    font-weight: bold;
+    font-size: 1.5em;
+  }
+
+  #idea-container{
+      text-align: left;
+      align-items: center;
+  }
+
+  .card {
+    border: 2px solid black;
+    margin: 0px 0px 10px 0px;
+  }
+
+/* .navbar > .navbar-brand {
+    /*background-color: #DDDDDD;
+    color: black;
+    font-weight: bold;
+} */
+
+.page-container {
+    margin-top: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+}
+
+#bigProfilePic{
+  justify-content: center;
+  width:150px;
+  height:150px;
+  border-radius: 75px;
+  padding:10px;
+}
+
+#inputPassword,
+#inputUsername{
+  border: black solid 2px;
+  padding:2px;
+  margin:5px;
+}
+
+#loginButton,
+#addAccountButton,
+#signUpButton,
+#createAccountButton{
+  border: none;
+  background: hsl(0, 0%, 87%);
+}
+
+#backToLogin{
+  color: #000;
+}
+
+
+
+@media (min-width: 576px){
+
+}
+@media (min-width: 768px){
+
+}
+/* @media (min-width: 992px){
+    #gameBoard {
+        height: 600px;
+        width: 600px;
+    }
+}
+@media (min-width: 1200px){
+    #gameBoard {
+        height: 600px;
+        width: 600px;
+    }
+} */
