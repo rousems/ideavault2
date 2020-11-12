@@ -8,6 +8,21 @@
 
 /** namespace. */
 var rhit = rhit || {};
+rhit.IDEA_VAULT = "ideas";
+rhit.KEY_NAME = "name";
+rhit.KEY_DESC = "description";
+rhit.KEY_CONTENT = "content";
+rhit.KEY_AUTHOR = "userid";
+rhit.KEY_CREATION_DATE = "creationDate";
+
+rhit.KEY_ID = "id";
+rhit.KEY_IP = "ip";
+rhit.KEY_PASS = "password";
+rhit.KEY_USERNAME = "username";
+
+rhit.resultsManager = null;
+rhit.ideaManager = null;
+rhit.currentUser = null;
 
 //from stackoverflow
 function htmlToElement(html){
@@ -17,18 +32,45 @@ function htmlToElement(html){
 	return template.content.firstChild;
 }
 
+rhit.User = class {
+	id = "";
+	ip = "";
+	password = "";
+	username = "";
+	constructor(id, password, username){
+		this.id = id;
+		this.password = password;
+		this.username = username;
+		this.ip = ip;
+	}
+	getId = function(){
+		return this.id;
+	}
+	getIp = function(){
+		return this.ip;
+	}
+	getPassword = function(){
+		return this.password;
+	}
+	getUsername = function(){
+		return this.username;
+	}
+}
+
 rhit.Result = class {
 	title = "";
 	description = "";
 	tags = [];
 	content = "";
+	author = "";
 	date = new Date();
-	constructor(title, description, tags, content, date){
+	constructor(title, description, tags, content, date, author){
 		this.title = title;
 		this.description = description;
 		this.tags = tags;
 		this.content = content;
 		this.date = date;
+		this.author = author;
 	}
 	getTitle = function(){
 		return this.title;
@@ -53,15 +95,17 @@ rhit.resultsController = class {
 
 	showList = [];
 	
-	tempList = [new rhit.Result("Test1Title", "Test1Desc", ["Test1Tag1", "Test1Tag2"], "Test1Content", new Date("1995-12-17T03:24:00")),
-				new rhit.Result("Test2Title", "Test2Desc", ["Test2Tag1", "Test2Tag2"], "Test2Content", new Date("1996-12-17T03:24:00")),
-				new rhit.Result("Test3Title", "Test3Desc", ["Test3Tag1", "Test3Tag2"], "Test3Content", new Date("1997-12-17T03:24:00")),
+	tempList = [new rhit.Result("Test1Title", "Test1Desc", ["Test1Tag1", "Test1Tag2"], "Test1Content", new Date("1995-12-17T03:24:00"), "author"),
+				new rhit.Result("Test2Title", "Test2Desc", ["Test2Tag1", "Test2Tag2"], "Test2Content", new Date("1996-12-17T03:24:00"), "author"),
+				new rhit.Result("Test3Title", "Test3Desc", ["Test3Tag1", "Test3Tag2"], "Test3Content", new Date("1997-12-17T03:24:00"), "author"),
 				];
 
 	constructor(list){
 		//temporary functionality
 		this.resultList = this.tempList;
 		//list is stuff gotten from firebase
+
+
 
 		//by default, show everything;
 		this.showList = this.resultList;
@@ -231,12 +275,24 @@ rhit.main = function () {
 		window.location.href = "/login.html";
 	}
 	
-	var rc = new rhit.resultsController();
-	console.log(rc);
-	document.querySelector("#searchbutton").onclick = (event) => {
-		rc.filterBy(document.querySelector("#searchbar").value);
+	if (document.querySelector("#mainPage")){
+		var rc = new rhit.resultsController();
+		console.log(rc);
+		document.querySelector("#searchbutton").onclick = (event) => {
+			rc.filterBy(document.querySelector("#searchbar").value);
+		}
+		document.querySelector("#addbutton").onclick = (event) => {
+			window.location.href = "/addIdea.html";
+		}
+		document.querySelector("#username").onclick = (event) => {
+			
+		}
 	}
-	//rc.addCard(5);
+	if (document.querySelector("#addIdea")){
+		document.querySelector("#backbutton").onclick = (event) => {
+			window.location.href = "/mainPage.html";
+		}
+	}
 };
 
 rhit.main();
