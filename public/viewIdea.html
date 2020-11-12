@@ -12,8 +12,8 @@
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-        <button type="button" id="backsavebutton" class="btn btn-default btn-circle"><i class="material-icons">arrow_back</i></button>
-        <div id="backsavearrowlabel">Save Idea</div>
+        <button type="button" id="backbutton" class="btn btn-default btn-circle"><i class="material-icons">arrow_back</i></button>
+        <div id="backarrowlabel">Back</div>
       
       <!-- These will both be links and to the same place -->
       <div id="username" data-toggle="modal" data-target="#logoutDialog" type="button" >Default User Name</div>
@@ -21,33 +21,30 @@
 
 
   </nav>
-  <div id="addIdea" class="container page-container">
+  <div id="viewIdea" class="container page-container">
 
     <div id="newideacontainer">
 
-      <input type="text" id="addNameField" name="addNameField" placeholder="New Idea">
-      <input type="text" id="addDescField" name="addDescField" placeholder="Description">
-      <textarea type="text" id="addContentField" name="addContentField" placeholder="Content" rows="20"></textarea>
-
-      <!-- <div id="namecontainer"> -->
-
+      <button type="button" id="editbutton" class="btn btn-default btn-circle"><i class="material-icons">edit</i></button>
+      <div id="namecontainer">
         
-    
-      <!-- </div> -->
+        Funny Name
+      
+      </div>
 
-      <!-- <div id="descriptioncontainer">
+      <div id="descriptioncontainer">
 
-
+        Funny Description
     
       </div>
 
       <div id="contentcontainer">
 
-
+        Funny Content
     
-      </div> -->
-      <div id="addTagSection">
-        <button type="button" id="newtagbutton" data-toggle="modal" data-target="#addTagDialog" class="btn btn-default btn-circle"><i class="material-icons large">add</i></button>
+      </div>
+      <div id="viewTagSection">
+        <!-- <button type="button" id="newtagbutton" data-toggle="modal" data-target="#addTagDialog" class="btn btn-default btn-circle"><i class="material-icons large">add</i></button> -->
 
       </div>
 
