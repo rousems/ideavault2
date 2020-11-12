@@ -14,6 +14,7 @@ rhit.KEY_DESC = "description";
 rhit.KEY_CONTENT = "content";
 rhit.KEY_AUTHOR = "userid";
 rhit.KEY_CREATION_DATE = "creationDate";
+rhit.KEY_TAGS = "tags";
 
 rhit.KEY_ID = "id";
 rhit.KEY_IP = "ip";
@@ -58,19 +59,24 @@ rhit.User = class {
 }
 
 rhit.Result = class {
+	id = "";
 	title = "";
 	description = "";
 	tags = [];
 	content = "";
 	author = "";
-	date = new Date();
-	constructor(title, description, tags, content, date, author){
+	date = firebase.firestore.Timestamp.fromDate(new Date());
+	constructor(id, title, description, tags, content, date, author){
+		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.tags = tags;
 		this.content = content;
 		this.date = date;
 		this.author = author;
+	}
+	getId = function(){
+		return this.id;
 	}
 	getTitle = function(){
 		return this.title;
@@ -85,11 +91,16 @@ rhit.Result = class {
 		return this.content;
 	}
 	getDate = function(){
-		return this.date.getTime();
+		console.log('date', this.date);
+		let datime = this.date.toDate();
+		const month = datime.toLocaleString('default', { month: 'long' });
+		let retstring = month + " " + datime.getDate() + ", " + datime.getFullYear();
+		return retstring;
 	}
 }
 
 rhit.resultsController = class {
+
 	//this is a temporary list of results that is used to generate the ideas
 	resultList = [];
 
@@ -100,19 +111,89 @@ rhit.resultsController = class {
 				new rhit.Result("Test3Title", "Test3Desc", ["Test3Tag1", "Test3Tag2"], "Test3Content", new Date("1997-12-17T03:24:00"), "author"),
 				];
 
-	constructor(list){
+	constructor(uid){
 		//temporary functionality
-		this.resultList = this.tempList;
+		//this.resultList = this.tempList;
 		//list is stuff gotten from firebase
 
-
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.IDEA_VAULT);
+		console.log(this._ref);
+		this._unsubscribe = null;
+		this._uid = uid;
+		this.beginListening(this.updateView.bind(this));
 
 		//by default, show everything;
-		this.showList = this.resultList;
+		
 
 		//update the view
-		this.updateView();
+		//this.updateView();
 	}
+
+	add(title, description, tags, content) {
+		this._ref.add({
+			[rhit.KEY_TITLE]: title,
+			[rhit.KEY_DESC]: description,
+			[rhit.KEY_TAGS]: tags,
+			[rhit.KEY_CONTENT]: content,
+			[rhit.KEY_AUTHOR]: rhit.KEY_ID,
+			[rhit.KEY_CREATION_DATE]: firebase.firestore.Timestamp.now()
+		})
+		.then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.error("Error adding document: ", error);
+		});
+	}
+
+	beginListening(changeListener) {
+
+		let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
+
+		if (this._uid) {
+			query = query.where(rhit.KEY_AUTHOR, "==", this._uid);
+		}
+	
+		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
+			console.log("calling from begin listening");
+			console.log("query snapshot:", querySnapshot);
+			console.log("query snapshot.docs:", querySnapshot.docs);
+			this._documentSnapshots = querySnapshot.docs;
+			//console.log(querySnapshot.docs);
+			this.resultList = [];
+			for(let i = 0; i < this.getlength(); i++){
+				this.resultList.push(this.getResultAtIndex(i));
+			}
+			console.log("result list", this.resultList);
+			this.showList = this.resultList;
+			changeListener();
+			// querySnapshot.forEach((doc) => {
+			// 	console.log(doc.data());
+			// });
+		});
+	}
+	stopListening() { }
+
+	getlength = function() {
+		return this._documentSnapshots.length;
+	}
+	getResultAtIndex(index) {
+		console.log("ref", this._ref);
+		const docSnapshot =this._documentSnapshots[index];
+		console.log("ds", docSnapshot);
+		const newIdea = new rhit.Result(
+			docSnapshot.id,
+			docSnapshot.get(rhit.KEY_NAME),
+			docSnapshot.get(rhit.KEY_DESC),
+			docSnapshot.get(rhit.KEY_TAGS),
+			docSnapshot.get(rhit.KEY_CONTENT),
+			docSnapshot.get(rhit.KEY_CREATION_DATE),
+			docSnapshot.get(rhit.KEY_AUTHOR)
+		);
+		return newIdea;
+	}
+
 	addResult = function(result){
 		this.showList.push(result);
 		console.log("added", result);
@@ -227,24 +308,32 @@ rhit.resultsController = class {
 		//this.filterBy(document.querySelector("#searchbar").value);
 		this.addCard(this.showList);
 	}
-	_createResultCard = function(title, desc, date){
+	_createResultCard = function(title, desc, date, tags){
 		//This function will get info from the database to create its cards. For now they will be identical and created via a for loop
 		var defaultString = `<div id="idea-container">
         						<div class="card">
 									  <div class="card-body">
-									  	<p class = "date">Date</p>
+										<p class = "date">Date</p>
+										 <p class = "card-text-right">Right text</p>
 							            <h5 class="card-title">Idea title</h5>
 							            <p class="card-text">This is the description of the idea</p>
 						            </div>
 								</div>
 							  </div>`
 		var string = defaultString;
+		let tagstring = "";
+		for(let i = 0; i < tags.length; i++){
+			tagstring += tags[i] + "  ";
+		}
+		console.log(tagstring);
 		var testString = `<div id="idea-container">
 							  <div class="card">
 									<div class="card-body">
 									<p class = "date">${date}</p>
+									
 									  <h5 class="card-title">${title}</h5>
 									  <p class="card-text">${desc}</p>
+									  <h7>${tagstring}</h7>
 								  </div>
 							  </div>
 							</div>`
@@ -258,10 +347,14 @@ rhit.resultsController = class {
 		//maybe refine removing children later
 		console.log("children", numChildren);
 		for(let i = 0; i < numChildren; i++){
+			console.log("removing: ", document.querySelector("#resultsbox").lastChild);
 			document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
+			// while (document.querySelector("#resultsbox").lastChild) {
+			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
+			// }
 		}
 		for(let i = 0; i < sList.length; i++){
-			document.querySelector("#resultsbox").appendChild(this._createResultCard(sList[i].getTitle(), sList[i].getDesc(), sList[i].getDate()));
+			document.querySelector("#resultsbox").appendChild(this._createResultCard(sList[i].getTitle(), sList[i].getDesc(), sList[i].getDate(), sList[i].getTags()));
 		}
 	}
 }
