@@ -121,6 +121,7 @@ rhit.resultsController = class {
 		console.log(this._ref);
 		this._unsubscribe = null;
 		this._uid = uid;
+		console.log("uid", this._uid);
 		this.beginListening(this.updateView.bind(this));
 
 		//by default, show everything;
@@ -149,11 +150,10 @@ rhit.resultsController = class {
 
 	beginListening(changeListener) {
 
-		let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
+		//let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
 
 		if (this._uid) {
-			query = query.where(rhit.KEY_AUTHOR, "==", this._uid);
-		}
+			let query = this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50).where(rhit.KEY_AUTHOR, "==", this._uid);
 	
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
 			console.log("calling from begin listening");
@@ -172,6 +172,7 @@ rhit.resultsController = class {
 			// 	console.log(doc.data());
 			// });
 		});
+	}
 	}
 	stopListening() { }
 
@@ -369,7 +370,7 @@ rhit.main = function () {
 	}
 	
 	if (document.querySelector("#mainPage")){
-		var rc = new rhit.resultsController();
+		var rc = new rhit.resultsController("testid");
 		console.log(rc);
 		document.querySelector("#searchbutton").onclick = (event) => {
 			rc.filterBy(document.querySelector("#searchbar").value);
