@@ -327,6 +327,7 @@ html,body {
 #createAccountButton{
   border: none;
   background: hsl(0, 0%, 87%);
+  padding: 0px 3px;
 }
 
 #loginButton,

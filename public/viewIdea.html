@@ -29,7 +29,7 @@
 
       <button type="button" id="editbutton" class="btn btn-default btn-circle"> <i class="material-icons">edit</i></button>
 
-      <button type="button" id="deleteButton" class="btn btn-default btn-circle"> <i class="material-icons">delete</i></button>
+      <button type="button" id="deleteButton" data-toggle="modal" data-target="#deleteDialog" class="btn btn-default btn-circle"> <i class="material-icons">delete</i></button>
       
       <div id="namecontainer">
         
@@ -49,7 +49,7 @@
     
       </div>
       <div id="viewTagSection">
-        <!-- <button type="button" id="newtagbutton" data-toggle="modal" data-target="#addTagDialog" class="btn btn-default btn-circle"><i class="material-icons large">add</i></button> -->
+        <button type="button" id="newtagbutton" data-toggle="modal" data-target="#addTagDialog" class="btn btn-default btn-circle"><i class="material-icons large">add</i></button>
 
       </div>
 
@@ -72,6 +72,23 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
           <button id="logout" type="button" class="btn btn-primary" data-dismiss="modal">LOG OUT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to delete? Deleted ideas can not be recovered!</h5>
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="delete" type="button" class="btn btn-warning" data-dismiss="modal">DELETE</button>
         </div>
       </div>
     </div>

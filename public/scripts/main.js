@@ -316,7 +316,10 @@ rhit.singleAddResultController = class {
 	}
 
 	updateView(){
-		this.addTag(this.tagAddList);
+		if(document.querySelector("#addIdea"))
+			this.addTag(this.tagAddList);
+		if(document.querySelector("#editIdea"))
+			this.editTag(this.tagAddList);
 	}
 
 	addTag = function(sList){
@@ -337,7 +340,25 @@ rhit.singleAddResultController = class {
 		}
 	}
 
+	editTag = function(sList){
+		console.log(sList);
+		let numChildren = document.querySelector("#editTagSection").childElementCount;
+		//maybe refine removing children later
+		console.log("children", numChildren);
+		for(let i = 0; i < numChildren-1; i++){
+			console.log("removing: ", document.querySelector("#editTagSection").lastChild);
+			document.querySelector("#editTagSection").removeChild(document.querySelector("#editTagSection").lastChild);
+			// while (document.querySelector("#resultsbox").lastChild) {
+			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
+			// }
+		}
+		for(let i = 0; i < sList.length; i++){
+			console.log("appending");
+			document.querySelector("#editTagSection").appendChild(this._createTag(sList[i]));
+		}
+	}
 	_createTag = function(name){
+		console.log("creating a tag", name);
 		return htmlToElement(`
 		<span id="tag">
 			  ${name}
@@ -408,6 +429,22 @@ rhit.resultsController = class {
 		})
 		.catch(function (error) {
 			console.error("Error adding document: ", error);
+		});
+	}
+
+	edit(title, description, tags, content) {
+		let ref = firebase.firestore().collection(rhit.IDEA_VAULT).doc(localStorage.getItem("ideaid"))
+		ref.update({
+			[rhit.KEY_NAME]: title,
+			[rhit.KEY_DESC]: description,
+			[rhit.KEY_TAGS]: tags,
+			[rhit.KEY_CONTENT]: content
+		})
+		.then(function (docRef) {
+			console.log("Document updated with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.error("Error updating document: ", error);
 		});
 	}
 
@@ -811,10 +848,28 @@ rhit.main = function () {
 		document.querySelector("#backbutton").onclick=(event)=>{
 			window.location.href = "/mainPage.html";
 		}
-		document.querySelector("#deleteButton").onclick=(event)=>{
+		document.querySelector("#delete").onclick=(event)=>{
 			let result = new rhit.singleAddResultController();
 			result.delete();
 		}
+		document.querySelector("#editbutton").onclick=(event)=>{
+			window.location.href = `/editIdea.html`;
+		}
+	}
+
+	if (document.querySelector("#addAccountPage")){
+		document.querySelector("#createAccountButton").onclick=(event)=>{
+			let uname = document.querySelector("#inputUsername").value;
+			let upass = document.querySelector("#inputPassword").value;
+			let mngr = new this.usersController();
+			mngr.testPass(uname, upass);
+			setTimeout(
+				function() {
+				  window.location.href = `/mainPage.html`;
+				}, 500);
+			}
+			
+			rhit.checkForRedirects();
 	}
 
 	if (document.querySelector("#login")){
@@ -849,10 +904,18 @@ rhit.main = function () {
 			let passconfirm = document.querySelector("#inputPasswordConfirm").value;
 			if (pass == passconfirm){
 				rhit.usersManager.add(localStorage.getItem("visitorip"), document.querySelector("#inputUsername").value, document.querySelector("#inputPassword").value, document.querySelector("#picInput").value);
-			}
+				let usrmgr = new rhit.usersController();
+				usrmgr.testPass(document.querySelector("#inputUsername").value, document.querySelector("#inputPassword").value);
+				setTimeout(
+					function() {
+					  window.location.href = `/mainPage.html`;
+					}, 500);
+				}
+				
 			else{
 				window.alert("Passwords do not match");
 			}
+			rhit.checkForRedirects();
 			//console.log(document.querySelector("#picInput").value);
 		}
 		
@@ -892,7 +955,60 @@ rhit.main = function () {
 			let desc = document.querySelector("#addDescField").value;
 			let content = document.querySelector("#addContentField").value;
 			let tags = adder.tagAddList;
-			rhit.resultsManager.add(name,desc,tags,content);
+			if (name == ""){
+				window.alert("Ideas must have a name!");
+			}
+			// else if (desc == ""){
+			// 	window.alert("Ideas must have a description!");
+			// }
+			else if (content == ""){
+				window.alert("Ideas must have content!");
+			}
+			else{
+				rhit.resultsManager.add(name,desc,tags,content);
+				adder = null;
+				setTimeout(function(){
+					window.location.href = "/mainPage.html";
+				}, 500);
+			}
+		}
+
+		document.querySelector("#goBack").onclick=(event)=>{
+			window.location.href="/mainPage.html";
+		}
+		
+		document.querySelector("#searchbutton").onclick = (event) => {
+			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
+		}
+	}
+	if (document.querySelector("#editIdea")){
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		rhit.currentUser = urlParams.get('user');
+		console.log("on the edit page");
+		let adder = new rhit.singleAddResultController();
+		document.querySelector("#editNameField").value = localStorage.getItem("ideaName");
+		document.querySelector("#editDescField").value = localStorage.getItem("ideaDesc");
+		document.querySelector("#editContentField").value = localStorage.getItem("ideaContent");
+		if(localStorage.getItem("ideaTags").length!=0){
+			console.log("tags", localStorage.getItem("ideaTags").length);
+			document.querySelector("#editTagSection").appendChild(adder._createTag(localStorage.getItem("ideaTags")));
+			adder.add(localStorage.getItem("ideaTags"));
+		}
+		
+
+		document.querySelector("#editTag").onclick = (event) => {
+			let tagName = document.querySelector("#inputTag").value;
+			document.querySelector("#inputTag").value = "";
+			console.log(adder);
+			adder.add(tagName);
+		}
+		document.querySelector("#saveEdit").onclick = (event) => {
+			let name = document.querySelector("#editNameField").value;
+			let desc = document.querySelector("#editDescField").value;
+			let content = document.querySelector("#editContentField").value;
+			let tags = adder.tagAddList;
+			rhit.resultsManager.edit(name,desc,tags,content);
 			adder = null;
 			setTimeout(function(){
 				window.location.href = "/mainPage.html";
