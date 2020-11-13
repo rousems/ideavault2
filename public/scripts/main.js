@@ -125,8 +125,8 @@ rhit.usersController = class {
 			}
 			else {
 				if(!document.querySelector("#signUpPage")){
-					//localStorage.clear();
-					//window.location.href = "/accountSetup.html";
+					localStorage.clear();
+					window.location.href = "/accountSetup.html";
 				}
 			}
 		});
@@ -228,11 +228,11 @@ rhit.usersController = class {
 		console.log("ref", this._ref);
 		const docSnapshot =this._documentSnapshots[index];
 		console.log("ds", docSnapshot);
-		console.log("key:", docSnapshot.key);
+		console.log("key:", docSnapshot.id);
 		const usor = new rhit.User(
 			//docSnapshot.id,
 			//docSnapshot.get(rhit.KEY_ID),
-			docSnapshot.key,
+			docSnapshot.id,
 			docSnapshot.get(rhit.KEY_IP),
 			docSnapshot.get(rhit.KEY_PASS),
 			docSnapshot.get(rhit.KEY_USERNAME),
@@ -335,6 +335,10 @@ rhit.singleAddResultController = class {
 			  ${name}
 		</span>`
 		);
+	}
+
+	delete = function(){
+		
 	}
 
 }
@@ -618,7 +622,16 @@ rhit.resultsController = class {
 			// }
 		}
 		for(let i = 0; i < sList.length; i++){
-			document.querySelector("#resultsbox").appendChild(this._createResultCard(sList[i].getTitle(), sList[i].getDesc(), sList[i].getDate(), sList[i].getTags()));
+			let newCard = document.querySelector("#resultsbox").appendChild(this._createResultCard(sList[i].getTitle(), sList[i].getDesc(), sList[i].getDate(), sList[i].getTags()));
+			newCard.onclick=(event)=>{
+				localStorage.setItem("ideaName",sList[i].getTitle());
+				localStorage.setItem("ideaDesc",sList[i].getDesc());
+				localStorage.setItem("ideaContent",sList[i].getContent());
+				localStorage.setItem("ideaTags",sList[i].getTags());
+				
+				window.location.href="/viewIdea.html";
+
+			}
 		}
 	}
 }
@@ -770,6 +783,22 @@ rhit.main = function () {
 	
 	}
 
+	if(document.querySelector("#viewIdea")){
+		document.querySelector("#namecontainer").innerHTML = localStorage.getItem("ideaName");
+		document.querySelector("#descriptioncontainer").innerHTML = localStorage.getItem("ideaDesc");
+		document.querySelector("#contentcontainer").innerHTML = localStorage.getItem("ideaContent");
+		let result = new rhit.singleAddResultController();
+		if(localStorage.getItem("ideaTags").length!=0){
+			document.querySelector("#viewTagSection").appendChild(result._createTag(localStorage.getItem("ideaTags")));
+		}
+		document.querySelector("#backbutton").onclick=(event)=>{
+			window.location.href = "/mainPage.html";
+		}
+		document.querySelector("#deleteButton").onclick=(event)=>{
+			let result = new rhit.singleAddResultController();
+		}
+	}
+
 	if (document.querySelector("#login")){
 		console.log("clearing localstorage");
 		localStorage.clear();
@@ -840,7 +869,7 @@ rhit.main = function () {
 			console.log(adder);
 			adder.add(tagName);
 		}
-		document.querySelector("#backsavebutton").onclick = (event) => {
+		document.querySelector("#save").onclick = (event) => {
 			let name = document.querySelector("#addNameField").value;
 			let desc = document.querySelector("#addDescField").value;
 			let content = document.querySelector("#addContentField").value;
@@ -850,6 +879,10 @@ rhit.main = function () {
 			setTimeout(function(){
 				window.location.href = "/mainPage.html";
 			}, 500);
+		}
+
+		document.querySelector("#goBack").onclick=(event)=>{
+			window.location.href="/mainPage.html";
 		}
 		
 		document.querySelector("#searchbutton").onclick = (event) => {
