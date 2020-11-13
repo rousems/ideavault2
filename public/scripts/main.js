@@ -7,6 +7,8 @@
  */
 
 /** namespace. */
+
+console.log("localstorage", localStorage);
 var rhit = rhit || {};
 rhit.IDEA_VAULT = "ideas";
 rhit.KEY_NAME = "name";
@@ -21,11 +23,17 @@ rhit.KEY_ID = "id";
 rhit.KEY_IP = "ip";
 rhit.KEY_PASS = "password";
 rhit.KEY_USERNAME = "username";
+rhit.KEY_PFP = "pfp";
 
 rhit.resultsManager = null;
 rhit.usersManager = null;
 rhit.ideaManager = null;
 rhit.currentUser = null;
+//console.log("we are about to set the auth manager to null again, because the authManager is: ", rhit.authManager);
+/*if (rhit.authManager == undefined){
+	rhit.authManager = localStorage.getItem("authmanager");
+}*/
+//else rhit.authManager = null;
 rhit.authManager = null;
 
 //from stackoverflow
@@ -44,11 +52,13 @@ rhit.User = class {
 	ip = "";
 	password = "";
 	username = "";
-	constructor(id, ip, password, username){
+	pfp = "";
+	constructor(id, ip, password, username, pfp){
 		this.id = id;
 		this.password = password;
 		this.username = username;
 		this.ip = ip;
+		this.pfp = pfp;
 	}
 	getId = function(){
 		return this.id;
@@ -61,6 +71,9 @@ rhit.User = class {
 	}
 	getUsername = function(){
 		return this.username;
+	}
+	getPfp = function(){
+		return this.pfp;
 	}
 }
 
@@ -91,12 +104,39 @@ rhit.usersController = class {
 		//this.updateView();
 	}
 
-	add(id, ip, username, password) {
+	getNameAndPfpFromIP(){
+		let gottenUsers = [];
+		//where(rhit.KEY_IP, "==", localStorage.getItem("vistorip"))
+		let query = this._ref.limit(50);
+		//console.log(query);
+		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
+			console.log("calling from getnameandpfp (users)");
+			console.log("query snapshot:", querySnapshot);
+			console.log("query snapshot.docs:", querySnapshot.docs);
+			this._documentSnapshots = querySnapshot.docs;
+			//console.log(this.getlength());
+			for(let i = 0; i < this.getlength(); i++){
+				gottenUsers.push(this.getResultAtIndex(i));
+			}
+			//console.log("gottenUsers", gottenUsers);
+			if (gottenUsers.length != 0){
+				localStorage.setItem("visitorusername", gottenUsers[0].getUsername());
+				localStorage.setItem("visitorpfp", gottenUsers[0].getPfp());
+			}
+			else {
+				localStorage.clear();
+				window.location.href = "/accountSetup.html";
+			}
+		});
+	}
+
+	add(id, ip, username, password, pfp) {
 		this._ref.add({
 			[rhit.KEY_ID]: id,
 			[rhit.KEY_IP]: ip,
 			[rhit.KEY_USERNAME]: username,
-			[rhit.KEY_PASS]: password
+			[rhit.KEY_PASS]: password,
+			[rhit.KEY_PFP]: pfp
 		})
 		.then(function (docRef) {
 			console.log("Document written with ID: ", docRef.id);
@@ -150,8 +190,14 @@ rhit.usersController = class {
 				//console.log("userlist 0's pass", this.userList[0].getPassword());
 				if (testpass == this.userList[0].getPassword()){
 					rhit.authManager.setSignedIn(this.userList[0]);
+					console.log("what's in the authManager @ line 153", rhit.authManager);
 					rhit.currentUser = this.userList[0];
-					console.log("The current user signed in is ", rhit.currentUser);
+					localStorage.setItem("userid", this.userList[0].getId());
+					localStorage.setItem("userip", this.userList[0].getIp());
+					localStorage.setItem("username", this.userList[0].getUsername());
+					localStorage.setItem("userpass", this.userList[0].getPassword());
+					localStorage.setItem("pfp", this.userList[0].getPfp());
+					//console.log("The current user signed in is ", rhit.currentUser);
 					return true;
 				}
 				else{
@@ -184,7 +230,8 @@ rhit.usersController = class {
 			docSnapshot.get(rhit.KEY_ID),
 			docSnapshot.get(rhit.KEY_IP),
 			docSnapshot.get(rhit.KEY_PASS),
-			docSnapshot.get(rhit.KEY_USERNAME)
+			docSnapshot.get(rhit.KEY_USERNAME),
+			docSnapshot.get(rhit.KEY_PFP)
 		);
 		console.log("usor", usor);
 		return usor;
@@ -279,9 +326,9 @@ rhit.singleAddResultController = class {
 
 	_createTag = function(name){
 		return htmlToElement(`
-		<div id="tag">
+		<span id="tag">
 			  ${name}
-		</div>`
+		</span>`
 		);
 	}
 
@@ -322,13 +369,13 @@ rhit.resultsController = class {
 		//this.updateView();
 	}
 
-	add(title, description, tags, content, usid) {
+	add(title, description, tags, content) {
 		this._ref.add({
-			[rhit.KEY_TITLE]: title,
+			[rhit.KEY_NAME]: title,
 			[rhit.KEY_DESC]: description,
 			[rhit.KEY_TAGS]: tags,
 			[rhit.KEY_CONTENT]: content,
-			[rhit.KEY_AUTHOR]: usid,
+			[rhit.KEY_AUTHOR]: localStorage.getItem("userid"),
 			[rhit.KEY_CREATION_DATE]: firebase.firestore.Timestamp.now()
 		})
 		.then(function (docRef) {
@@ -345,9 +392,17 @@ rhit.resultsController = class {
 
 		
 		//let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
-		document.querySelector("#logout").onclick=(event)=>{
-			rhit.authManager.signOut();
-		};
+		if (document.querySelector("#logout")){
+			document.querySelector("#logout").onclick=(event)=>{
+				//rhit.authManager.signOut();
+				localStorage.removeItem("userip");
+				localStorage.removeItem("userid");
+				localStorage.removeItem("username");
+				localStorage.removeItem("userpass");
+				localStorage.removeItem("pfp");
+				window.location.href = "/login.html";
+			};
+		}
 
 		if (this._uid) {
 			let query = this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50).where(rhit.KEY_AUTHOR, "==", this._uid);
@@ -437,15 +492,21 @@ rhit.resultsController = class {
 		return sortedList;
 	}
 	filterByName = function(search){
+		
 		let unsortedList = this.resultList;
 		console.log(unsortedList);
 		let sortedList = [];
 		for(let i = 0; i < unsortedList.length; i++){
 			let instanceName = unsortedList[i].getTitle();
+			//console.log("this is what we search by: ", search);
 			let searchLength = search.length;
-			for(let j = 0; j < instanceName.length - searchLength + 1; j++){
-				console.log("searching", instanceName.substring(j, j+searchLength));
-				if (instanceName.substring(j, j+searchLength) === search){
+			let name = instanceName;
+			if (name == undefined){
+				name = "";
+			}
+			for(let j = 0; j < name.length - searchLength + 1; j++){
+				console.log("searching", name.substring(j, j+searchLength));
+				if (name.substring(j, j+searchLength) === search){
 					sortedList.push(unsortedList[i]);
 					break;
 				}
@@ -521,7 +582,7 @@ rhit.resultsController = class {
 		var string = defaultString;
 		let tagstring = "";
 		for(let i = 0; i < tags.length; i++){
-			tagstring += tags[i] + "  ";
+			tagstring += `<span id="tagstring">${tags[i]}</span>`;
 		}
 		console.log(tagstring);
 		var testString = `<div id="idea-container">
@@ -531,7 +592,7 @@ rhit.resultsController = class {
 									
 									  <h5 class="card-title">${title}</h5>
 									  <p class="card-text">${desc}</p>
-									  <h7>${tagstring}</h7>
+									  ${tagstring}
 								  </div>
 							  </div>
 							</div>`
@@ -622,7 +683,7 @@ rhit.checkForRedirects=function(){
 	// }
 }
 
-rhit.startFirebaseUI = function(){
+/*rhit.startFirebaseUI = function(){
 	var uiConfig = {
         signInSuccessUrl: '/',
         signInOptions: [
@@ -636,24 +697,64 @@ rhit.startFirebaseUI = function(){
       const ui = new firebaseui.auth.AuthUI(firebase.auth());
       
       ui.start('#firebaseui-auth-container', uiConfig);
-}
+}*/
 
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
 	console.log("Ready");
 
+	rhit.usersManager = new rhit.usersController();
 
-	//this will get the current submission to the login button passed into it, to test entrance/rejection
+	$.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+		//console.log("data", data);
+		//console.log("index of ip", data.indexOf("ip"));
+		let ipspot = data.indexOf("ip");
+		data = data.substring(ipspot);
+		//console.log("trimmeddata", data);
+		let nextspace = data.indexOf("\n");
+		data = data.substring(0, nextspace);
+		//console.log(data);
+		localStorage.setItem("visitorip", data);
+
+
+		rhit.usersManager.getNameAndPfpFromIP();
+		//console.log(localStorage);
+	});
+
 	
 
-	rhit.authManager = new rhit.AuthenticationManager();
+	if (document.querySelector("#username")){
+		document.querySelector("#username").innerHTML = localStorage.getItem("username");
+	}
+	
+	if (document.querySelector(".profilepics")){
+		document.querySelectorAll(".profilepics").forEach(element => element.src = `images/${localStorage.getItem("pfp")}`);
+		if (document.querySelector("#login")){
+			console.log(localStorage);
+			console.log(localStorage.getItem("visitorpfp"));
+			console.log(localStorage.getItem("visitorusername"));
+			document.querySelector("#bigProfilePic").src = `images/${localStorage.getItem("visitorpfp")}`;
+			document.querySelector("#displayUsername").innerHTML = localStorage.getItem("visitorusername");
+		}
+	}
+
+	
+	console.log("what is the authmanager right now?", rhit.authManager);
+	if (rhit.authManager == null){
+		console.log("about to run new authentication manager");
+		rhit.authManager = new rhit.AuthenticationManager();
+		//console.log(rhit.authManager)
+		//localStorage.setItem("authmanager", rhit.authManager);
+		
+	}
 	rhit.authManager.beginListening(()=>{
 		//console.log(rhit.authManager.isSignedIn);
 		rhit.checkForRedirects();
-		rhit.startFirebaseUI();
+		//rhit.startFirebaseUI();
 	});
-	rhit.resultsManager = new rhit.resultsController("testid");
+	rhit.resultsManager = new rhit.resultsController(localStorage.getItem("userid"));
+	//rhit.currentUser = new rhit.User("","","","");
 
 	if (document.querySelector("#firstPage")){
 		window.location.href = "/login.html";
@@ -662,14 +763,16 @@ rhit.main = function () {
 	}
 
 	if (document.querySelector("#login")){
-		rhit.usersManager = new rhit.usersController();
+		console.log("clearing localstorage");
+		localStorage.clear();
+		
 		console.log("on the login page");
 		document.querySelector("#loginButton").onclick = (event) => {
 			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
 			setTimeout(
 				function() {
 				  window.location.href = `/mainPage.html?user=${rhit.currentUser.getId()}`;
-				}, 5000);
+				}, 500);
 			
 			//rhit.checkForRedirects();
 		}
@@ -680,7 +783,7 @@ rhit.main = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		rhit.currentUser = urlParams.get('user');
-		console.log("THIS IS THE CURRENT USER", rhit.currentUser);
+		//console.log("THIS IS THE CURRENT USER", rhit.currentUser);
 
 		document.querySelector("#searchbutton").onclick = (event) => {
 			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
@@ -709,9 +812,11 @@ rhit.main = function () {
 			let desc = document.querySelector("#addDescField").value;
 			let content = document.querySelector("#addContentField").value;
 			let tags = adder.tagAddList;
-			rhit.resultsManager.add(name,desc,tags,content, rhit.currentUser);
-		    adder = null;
-			window.location.href = "/mainPage.html";
+			rhit.resultsManager.add(name,desc,tags,content);
+			adder = null;
+			setTimeout(function(){
+				window.location.href = "/mainPage.html";
+			}, 500);
 		}
 		
 		document.querySelector("#searchbutton").onclick = (event) => {
