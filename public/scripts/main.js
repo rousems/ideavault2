@@ -8,7 +8,7 @@
 
 /** namespace. */
 
-console.log("localstorage", localStorage);
+//console.log("localstorage", localStorage);
 var rhit = rhit || {};
 rhit.IDEA_VAULT = "ideas";
 rhit.KEY_NAME = "name";
@@ -29,7 +29,7 @@ rhit.resultsManager = null;
 rhit.usersManager = null;
 rhit.ideaManager = null;
 rhit.currentUser = null;
-//console.log("we are about to set the auth manager to null again, because the authManager is: ", rhit.authManager);
+////console.log("we are about to set the auth manager to null again, because the authManager is: ", rhit.authManager);
 /*if (rhit.authManager == undefined){
 	rhit.authManager = localStorage.getItem("authmanager");
 }*/
@@ -82,7 +82,7 @@ rhit.usersController = class {
 
 	constructor(){
 
-		console.log("created usersController");
+		//console.log("created usersController");
 
 		
 		//temporary functionality
@@ -91,10 +91,10 @@ rhit.usersController = class {
 
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.USER_VAULT);
-		console.log(this._ref);
+		//console.log(this._ref);
 		this._unsubscribe = null;
 		//this._name = testname;
-		//console.log("uid", this._name);
+		////console.log("uid", this._name);
 		this.beginListening();
 
 		//by default, show everything;
@@ -108,23 +108,23 @@ rhit.usersController = class {
 		let gottenUsers = [];
 		
 		let query = this._ref.limit(50).where(rhit.KEY_IP, "==", localStorage.getItem("visitorip"));
-		//console.log(query);
+		////console.log(query);
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
-			console.log("calling from getnameandpfp (users)");
-			console.log("query snapshot:", querySnapshot);
-			console.log("query snapshot.docs:", querySnapshot.docs);
+			//console.log("calling from getnameandpfp (users)");
+			//console.log("query snapshot:", querySnapshot);
+			//console.log("query snapshot.docs:", querySnapshot.docs);
 			this._documentSnapshots = querySnapshot.docs;
-			//console.log(this.getlength());
+			////console.log(this.getlength());
 			for(let i = 0; i < this.getlength(); i++){
 				gottenUsers.push(this.getResultAtIndex(i));
 			}
-			//console.log("gottenUsers", gottenUsers);
+			////console.log("gottenUsers", gottenUsers);
 			if (gottenUsers.length != 0){
 				localStorage.setItem("visitorusername", gottenUsers[0].getUsername());
 				localStorage.setItem("visitorpfp", gottenUsers[0].getPfp());
 			}
 			else {
-				if(!document.querySelector("#signUpPage")){
+				if(!document.querySelector("#signUpPage") && !document.querySelector("#addAccountPage")){
 					localStorage.clear();
 					window.location.href = "/accountSetup.html";
 				}
@@ -141,7 +141,7 @@ rhit.usersController = class {
 			[rhit.KEY_PFP]: pfp
 		})
 		.then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
+			////console.log("Document written with ID: ", docRef.id);
 		})
 		.catch(function (error) {
 			console.error("Error adding document: ", error);
@@ -153,9 +153,9 @@ rhit.usersController = class {
 	}
 
 	testPass(testname, testpass) {
-		console.log("hello at usersmanager");
-		console.log("test name", testname);
-		console.log("test pass", testpass);
+		////console.log("hello at usersmanager");
+		////console.log("test name", testname);
+		////console.log("test pass", testpass);
 
 		this._name = testname;
 
@@ -169,41 +169,41 @@ rhit.usersController = class {
 			let query = this._ref.limit(50).where(rhit.KEY_USERNAME, "==", this._name);
 	
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
-			console.log("calling from begin listening (users)");
-			console.log("query snapshot:", querySnapshot);
-			console.log("query snapshot.docs:", querySnapshot.docs);
+			////console.log("calling from begin listening (users)");
+			////console.log("query snapshot:", querySnapshot);
+			////console.log("query snapshot.docs:", querySnapshot.docs);
 			this._documentSnapshots = querySnapshot.docs;
-			//console.log(querySnapshot.docs);
+			//////console.log(querySnapshot.docs);
 			this.userList = [];
 			for(let i = 0; i < this.getlength(); i++){
 				this.userList.push(this.getResultAtIndex(i));
 			}
-			console.log("user list", this.userList);
+			////console.log("user list", this.userList);
 
 			//if empty
 			//tell user the name is not valid
 			if (this.userList.length == 0){
-				console.log("No users with that username");
+				////console.log("No users with that username");
 			}
 			//if not empty
 			//check if user list entry 0 is the same password
 			else{
-				console.log("userlist 0's pass", this.userList[0].getPassword());
-				//console.log("userlist 0's pass", this.userList[0].getPassword());
+				////console.log("userlist 0's pass", this.userList[0].getPassword());
+				//////console.log("userlist 0's pass", this.userList[0].getPassword());
 				if (testpass == this.userList[0].getPassword()){
 					rhit.authManager.setSignedIn(this.userList[0]);
-					console.log("what's in the authManager @ line 153", rhit.authManager);
+					////console.log("what's in the authManager @ line 153", rhit.authManager);
 					rhit.currentUser = this.userList[0];
 					localStorage.setItem("userid", this.userList[0].getId());
 					localStorage.setItem("userip", this.userList[0].getIp());
 					localStorage.setItem("username", this.userList[0].getUsername());
 					localStorage.setItem("userpass", this.userList[0].getPassword());
 					localStorage.setItem("pfp", this.userList[0].getPfp());
-					//console.log("The current user signed in is ", rhit.currentUser);
+					////console.log("The current user signed in is ", rhit.currentUser);
 					return true;
 				}
 				else{
-					console.log("Sign in failed, passwords do not match");
+					//console.log("Sign in failed, passwords do not match");
 					window.alert("Sign in failed, passwords do not match");
 				}
 			
@@ -214,7 +214,7 @@ rhit.usersController = class {
 			//this.showList = this.resultList;
 			//changeListener();
 			//// querySnapshot.forEach((doc) => {
-			// 	console.log(doc.data());
+			// 	//console.log(doc.data());
 			// });
 		});
 	}
@@ -225,10 +225,10 @@ rhit.usersController = class {
 		return this._documentSnapshots.length;
 	}
 	getResultAtIndex(index) {
-		console.log("ref", this._ref);
+		//console.log("ref", this._ref);
 		const docSnapshot =this._documentSnapshots[index];
-		console.log("ds", docSnapshot);
-		console.log("key:", docSnapshot.id);
+		//console.log("ds", docSnapshot);
+		//console.log("key:", docSnapshot.id);
 		const usor = new rhit.User(
 			//docSnapshot.id,
 			//docSnapshot.get(rhit.KEY_ID),
@@ -238,7 +238,7 @@ rhit.usersController = class {
 			docSnapshot.get(rhit.KEY_USERNAME),
 			docSnapshot.get(rhit.KEY_PFP)
 		);
-		console.log("usor", usor);
+		//console.log("usor", usor);
 		return usor;
 	}
 }
@@ -282,7 +282,7 @@ rhit.Result = class {
 		return this.content;
 	}
 	getDate = function(){
-		console.log('date', this.date);
+		//console.log('date', this.date);
 		let datime = this.date.toDate();
 		const month = datime.toLocaleString('default', { month: 'long' });
 		let retstring = month + " " + datime.getDate() + ", " + datime.getFullYear();
@@ -298,10 +298,10 @@ rhit.singleAddResultController = class {
 		//this.id = id;
 		//this._documentSnapshots = [];
 		
-		//console.log(this._ref);
+		////console.log(this._ref);
 		//this._unsubscribe = null;
 		//this._uid = uid;
-		//console.log("uid", this._uid);
+		////console.log("uid", this._uid);
 		//this.beginListening(this.updateView.bind(this));
 	// constructor(idea){
 	// 	this.name = idea.getName();
@@ -323,42 +323,42 @@ rhit.singleAddResultController = class {
 	}
 
 	addTag = function(sList){
-		console.log(sList);
+		//console.log(sList);
 		let numChildren = document.querySelector("#addTagSection").childElementCount;
 		//maybe refine removing children later
-		console.log("children", numChildren);
+		//console.log("children", numChildren);
 		for(let i = 0; i < numChildren-1; i++){
-			console.log("removing: ", document.querySelector("#addTagSection").lastChild);
+			//console.log("removing: ", document.querySelector("#addTagSection").lastChild);
 			document.querySelector("#addTagSection").removeChild(document.querySelector("#addTagSection").lastChild);
 			// while (document.querySelector("#resultsbox").lastChild) {
 			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
 			// }
 		}
 		for(let i = 0; i < sList.length; i++){
-			console.log("appending");
+			//console.log("appending");
 			document.querySelector("#addTagSection").appendChild(this._createTag(sList[i]));
 		}
 	}
 
 	editTag = function(sList){
-		console.log(sList);
+		//console.log(sList);
 		let numChildren = document.querySelector("#editTagSection").childElementCount;
 		//maybe refine removing children later
-		console.log("children", numChildren);
+		//console.log("children", numChildren);
 		for(let i = 0; i < numChildren-1; i++){
-			console.log("removing: ", document.querySelector("#editTagSection").lastChild);
+			//console.log("removing: ", document.querySelector("#editTagSection").lastChild);
 			document.querySelector("#editTagSection").removeChild(document.querySelector("#editTagSection").lastChild);
 			// while (document.querySelector("#resultsbox").lastChild) {
 			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
 			// }
 		}
 		for(let i = 0; i < sList.length; i++){
-			console.log("appending");
+			//console.log("appending");
 			document.querySelector("#editTagSection").appendChild(this._createTag(sList[i]));
 		}
 	}
 	_createTag = function(name){
-		console.log("creating a tag", name);
+		//console.log("creating a tag", name);
 		return htmlToElement(`
 		<span id="tag">
 			  ${name}
@@ -367,11 +367,11 @@ rhit.singleAddResultController = class {
 	}
 
 	delete = function(){
-		console.log("are we actually doing anything?");
+		//console.log("are we actually doing anything?");
 		this._ref = firebase.firestore().collection(rhit.IDEA_VAULT).doc(localStorage.getItem("ideaid"));
-		console.log(this._ref);
+		//console.log(this._ref);
 		this._ref.delete().then(function() {
-			console.log("Document successfully deleted!");
+			//console.log("Document successfully deleted!");
 			window.location.href = "/mainPage.html";
 		}).catch(function(error) {
 			console.error("Error removing document: ", error);
@@ -402,10 +402,10 @@ rhit.resultsController = class {
 
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.IDEA_VAULT);
-		console.log(this._ref);
+		//console.log(this._ref);
 		this._unsubscribe = null;
 		this._uid = uid;
-		console.log("uid", this._uid);
+		//console.log("uid", this._uid);
 		this.beginListening(this.updateView.bind(this));
 
 		//by default, show everything;
@@ -425,7 +425,7 @@ rhit.resultsController = class {
 			[rhit.KEY_CREATION_DATE]: firebase.firestore.Timestamp.now()
 		})
 		.then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
+			//console.log("Document written with ID: ", docRef.id);
 		})
 		.catch(function (error) {
 			console.error("Error adding document: ", error);
@@ -441,7 +441,7 @@ rhit.resultsController = class {
 			[rhit.KEY_CONTENT]: content
 		})
 		.then(function (docRef) {
-			console.log("Document updated with ID: ", docRef.id);
+			//console.log("Document updated with ID: ", docRef.id);
 		})
 		.catch(function (error) {
 			console.error("Error updating document: ", error);
@@ -470,20 +470,20 @@ rhit.resultsController = class {
 			let query = this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50).where(rhit.KEY_AUTHOR, "==", this._uid);
 	
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
-			console.log("calling from begin listening");
-			console.log("query snapshot:", querySnapshot);
-			console.log("query snapshot.docs:", querySnapshot.docs);
+			//console.log("calling from begin listening");
+			//console.log("query snapshot:", querySnapshot);
+			//console.log("query snapshot.docs:", querySnapshot.docs);
 			this._documentSnapshots = querySnapshot.docs;
-			//console.log(querySnapshot.docs);
+			////console.log(querySnapshot.docs);
 			this.resultList = [];
 			for(let i = 0; i < this.getlength(); i++){
 				this.resultList.push(this.getResultAtIndex(i));
 			}
-			console.log("result list", this.resultList);
+			//console.log("result list", this.resultList);
 			this.showList = this.resultList;
 			changeListener();
 			// querySnapshot.forEach((doc) => {
-			// 	console.log(doc.data());
+			// 	//console.log(doc.data());
 			// });
 		});
 	}
@@ -494,9 +494,9 @@ rhit.resultsController = class {
 		return this._documentSnapshots.length;
 	}
 	getResultAtIndex(index) {
-		console.log("ref", this._ref);
+		//console.log("ref", this._ref);
 		const docSnapshot =this._documentSnapshots[index];
-		console.log("ds", docSnapshot);
+		//console.log("ds", docSnapshot);
 		const newIdea = new rhit.Result(
 			docSnapshot.id,
 			docSnapshot.get(rhit.KEY_NAME),
@@ -511,11 +511,11 @@ rhit.resultsController = class {
 
 	addResult = function(result){
 		this.showList.push(result);
-		console.log("added", result);
+		//console.log("added", result);
 	}
 	clear = function(){
 		this.showList = [];
-		console.log("list cleared");
+		//console.log("list cleared");
 	}
 	update = function(){
 		//gets the newest list of results
@@ -523,7 +523,7 @@ rhit.resultsController = class {
 	filterBy = function(search){
 		//filter the results displayed by searchBy
 		var searchBy = document.querySelector("#sortBy").value;
-		console.log("search By:", searchBy);
+		//console.log("search By:", searchBy);
 		switch(searchBy){
 			case "by Date":
 				this.showList = this.filterByDate();
@@ -547,7 +547,7 @@ rhit.resultsController = class {
 	}
 	filterByDate = function(){
 		let sortedList = this.resultList.sort((a, b) => a.getDate() - b.getDate());
-		console.log("sorted list:", sortedList);
+		//console.log("sorted list:", sortedList);
 		// for (let i = 0; i < this.resultList.length; i++){
 			
 		// }
@@ -556,18 +556,18 @@ rhit.resultsController = class {
 	filterByName = function(search){
 		
 		let unsortedList = this.resultList;
-		console.log(unsortedList);
+		//console.log(unsortedList);
 		let sortedList = [];
 		for(let i = 0; i < unsortedList.length; i++){
 			let instanceName = unsortedList[i].getTitle();
-			//console.log("this is what we search by: ", search);
+			////console.log("this is what we search by: ", search);
 			let searchLength = search.length;
 			let name = instanceName;
 			if (name == undefined){
 				name = "";
 			}
 			for(let j = 0; j < name.length - searchLength + 1; j++){
-				console.log("searching", name.substring(j, j+searchLength));
+				//console.log("searching", name.substring(j, j+searchLength));
 				if (name.substring(j, j+searchLength) === search){
 					sortedList.push(unsortedList[i]);
 					break;
@@ -575,20 +575,20 @@ rhit.resultsController = class {
 			}
 		}
 		sortedList = sortedList.sort((a, b) => a.getDate() - b.getDate());
-		console.log("sorted list:", sortedList);
+		//console.log("sorted list:", sortedList);
 		return sortedList;
 	}
 	filterByTag = function(search){
 		let unsortedList = this.resultList;
 		let matched = false;
-		console.log(unsortedList);
+		//console.log(unsortedList);
 		let sortedList = [];
 		for(let i = 0; i < unsortedList.length; i++){
 			let tags = unsortedList[i].getTags();
 			let searchLength = search.length;
 			for(let k = 0; k < tags.length; k++){
 				for(let j = 0; j < tags[k].length - searchLength + 1; j++){
-					console.log("searching", tags[k].substring(j, j+searchLength));
+					//console.log("searching", tags[k].substring(j, j+searchLength));
 					if (tags[k].substring(j, j+searchLength) === search){
 						sortedList.push(unsortedList[i]);
 						matched = true;
@@ -602,18 +602,18 @@ rhit.resultsController = class {
 			}
 		}
 		sortedList = sortedList.sort((a, b) => a.getDate() - b.getDate());
-		console.log("sorted list:", sortedList);
+		//console.log("sorted list:", sortedList);
 		return sortedList;
 	}
 	filterByDesc = function(search){
 		let unsortedList = this.resultList;
-		console.log(unsortedList);
+		//console.log(unsortedList);
 		let sortedList = [];
 		for(let i = 0; i < unsortedList.length; i++){
 			let instanceName = unsortedList[i].getDesc();
 			let searchLength = search.length;
 			for(let j = 0; j < instanceName.length - searchLength + 1; j++){
-				console.log("searching", instanceName.substring(j, j+searchLength));
+				//console.log("searching", instanceName.substring(j, j+searchLength));
 				if (instanceName.substring(j, j+searchLength) === search){
 					sortedList.push(unsortedList[i]);
 					break;
@@ -621,11 +621,11 @@ rhit.resultsController = class {
 			}
 		}
 		sortedList = sortedList.sort((a, b) => a.getDate() - b.getDate());
-		console.log("sorted list:", sortedList);
+		//console.log("sorted list:", sortedList);
 		return sortedList;
 	}
 	updateView = function(){
-		//console.log("filtering by", document.querySelector("#searchbar").value);
+		////console.log("filtering by", document.querySelector("#searchbar").value);
 		//this.filterBy(document.querySelector("#searchbar").value);
 		this.addCard(this.showList);
 	}
@@ -646,7 +646,7 @@ rhit.resultsController = class {
 		for(let i = 0; i < tags.length; i++){
 			tagstring += `<span id="tagstring">${tags[i]}</span>`;
 		}
-		console.log(tagstring);
+		//console.log(tagstring);
 		var testString = `<div id="idea-container">
 							  <div class="card">
 									<div class="card-body">
@@ -663,12 +663,12 @@ rhit.resultsController = class {
 	}
 	
 	addCard = function(sList){
-		console.log(sList);
+		//console.log(sList);
 		let numChildren = document.querySelector("#resultsbox").childElementCount;
 		//maybe refine removing children later
-		console.log("children", numChildren);
+		//console.log("children", numChildren);
 		for(let i = 0; i < numChildren; i++){
-			console.log("removing: ", document.querySelector("#resultsbox").lastChild);
+			//console.log("removing: ", document.querySelector("#resultsbox").lastChild);
 			document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
 			// while (document.querySelector("#resultsbox").lastChild) {
 			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
@@ -707,10 +707,10 @@ rhit.AuthenticationManager = class{
 				const isAnonymous=user.isAnonymous;
 				const uid=user.uid;
 				
-				console.log(displayName);
-				console.log(email);
+				//console.log(displayName);
+				//console.log(email);
 			}else{
-				console.log("There is no user signed in!");
+				//console.log("There is no user signed in!");
 			}
 		});
 
@@ -718,7 +718,7 @@ rhit.AuthenticationManager = class{
 
 	signOut(){
 		firebase.auth().signOut().catch(function(error){
-			console.log("Sign Out error");
+			//console.log("Sign Out error");
 		});
 	}
 
@@ -740,15 +740,16 @@ rhit.AuthenticationManager = class{
 }
 
 rhit.checkForRedirects=function(){
-	//console.log("is signed in?",rhit.authManager.isSignedIn);
-	//console.log("the current user is", rhit.authManager);
+	////console.log("is signed in?",rhit.authManager.isSignedIn);
+	////console.log("the current user is", rhit.authManager);
 	if(document.querySelector("#login") && /*rhit.authManager.isSignedIn*/ localStorage.getItem("username")!= null){
-		//console.log("hello");
+		////console.log("hello");
 		window.location.href = "/mainPage.html";
 	}
+
 	if(!document.querySelector("#login") && /*!rhit.authManager.isSignedIn &&*/ localStorage.getItem("username") == null && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
-		console.log("hello");
-		//window.location.href = "/login.html";
+
+		window.location.href = "/login.html";
 	}
 	// if(document.querySelector("#addAccountPage") && !rhit.authManager.isSignedIn){
 	// 	window.location.href = "/addAccount.html";
@@ -774,26 +775,26 @@ rhit.checkForRedirects=function(){
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
-	console.log("Ready");
+	//console.log("Ready");
 
 	rhit.usersManager = new rhit.usersController();
 
 	rhit.checkForRedirects();
 
 	$.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
-		//console.log("data", data);
-		//console.log("index of ip", data.indexOf("ip"));
+		////console.log("data", data);
+		////console.log("index of ip", data.indexOf("ip"));
 		let ipspot = data.indexOf("ip");
 		data = data.substring(ipspot+3);
-		//console.log("trimmeddata", data);
+		////console.log("trimmeddata", data);
 		let nextspace = data.indexOf("\n");
 		data = data.substring(0, nextspace);
-		//console.log(data);
+		////console.log(data);
 		localStorage.setItem("visitorip", data);
 
 
 		rhit.usersManager.getNameAndPfpFromIP();
-		//console.log(localStorage);
+		////console.log(localStorage);
 	});
 
 	
@@ -803,28 +804,39 @@ rhit.main = function () {
 	}
 	
 	if (document.querySelector(".profilepics")){
-		document.querySelectorAll(".profilepics").forEach(element => element.src = localStorage.getItem("pfp"));
+		document.querySelectorAll(".profilepics").forEach(element => {
+			if(localStorage.getItem("pfp")==""){
+				element.src = "images/anonProfile.jpg";
+			}else{
+				element.src = localStorage.getItem("pfp");
+			}
+			
+		});
 		if (document.querySelector("#login")){
-			console.log(localStorage);
-			console.log(localStorage.getItem("visitorpfp"));
-			console.log(localStorage.getItem("visitorusername"));
+			//console.log(localStorage);
+			//console.log(localStorage.getItem("visitorpfp"));
+			//console.log(localStorage.getItem("visitorusername"));
 			//document.querySelector("#bigProfilePic").src = `images/${localStorage.getItem("visitorpfp")}`;
-			document.querySelector("#bigProfilePic").src = localStorage.getItem("visitorpfp");
+			if(localStorage.getItem("visitorpfp")==""){
+				document.querySelector("#bigProfilePic").src = "images/anonProfile.jpg";
+			}else{
+				document.querySelector("#bigProfilePic").src = localStorage.getItem("visitorpfp");
+			}
 			document.querySelector("#displayUsername").innerHTML = localStorage.getItem("visitorusername");
 		}
 	}
 
 	
-	console.log("what is the authmanager right now?", rhit.authManager);
+	//console.log("what is the authmanager right now?", rhit.authManager);
 	if (rhit.authManager == null){
-		console.log("about to run new authentication manager");
+		//console.log("about to run new authentication manager");
 		rhit.authManager = new rhit.AuthenticationManager();
-		//console.log(rhit.authManager)
+		////console.log(rhit.authManager)
 		//localStorage.setItem("authmanager", rhit.authManager);
 		
 	}
 	rhit.authManager.beginListening(()=>{
-		//console.log(rhit.authManager.isSignedIn);
+		////console.log(rhit.authManager.isSignedIn);
 		rhit.checkForRedirects();
 		//rhit.startFirebaseUI();
 	});
@@ -833,7 +845,7 @@ rhit.main = function () {
 
 	if (document.querySelector("#firstPage")){
 		window.location.href = "/login.html";
-		console.log("on the login page");
+		//console.log("on the login page");
 	
 	}
 
@@ -862,7 +874,7 @@ rhit.main = function () {
 			let uname = document.querySelector("#inputUsername").value;
 			let upass = document.querySelector("#inputPassword").value;
 			let mngr = new this.usersController();
-			mngr.testPass(uname, upass);
+			//mngr.testPass(uname, upass);
 			setTimeout(
 				function() {
 				  window.location.href = `/mainPage.html`;
@@ -873,10 +885,10 @@ rhit.main = function () {
 	}
 
 	if (document.querySelector("#login")){
-		console.log("clearing localstorage");
+		//console.log("clearing localstorage");
 		localStorage.clear();
 		
-		console.log("on the login page");
+		//console.log("on the login page");
 		document.querySelector("#loginButton").onclick = (event) => {
 			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value)
 			setTimeout(
@@ -891,7 +903,7 @@ rhit.main = function () {
 	
 	if (document.querySelector("#signUpPage")){
 		
-		console.log("on the setUpPage");
+		//console.log("on the setUpPage");
 		document.querySelector("#createAccountButton").onclick = (event) => {
 			// rhit.usersManager.add(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
 			// setTimeout(
@@ -916,17 +928,17 @@ rhit.main = function () {
 				window.alert("Passwords do not match");
 			}
 			rhit.checkForRedirects();
-			//console.log(document.querySelector("#picInput").value);
+			////console.log(document.querySelector("#picInput").value);
 		}
 		
 	}
 
 	if (document.querySelector("#mainPage")){
-		//console.log("are we on the main page?");
+		////console.log("are we on the main page?");
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		rhit.currentUser = urlParams.get('user');
-		//console.log("THIS IS THE CURRENT USER", rhit.currentUser);
+		////console.log("THIS IS THE CURRENT USER", rhit.currentUser);
 
 		document.querySelector("#searchbutton").onclick = (event) => {
 			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
@@ -942,12 +954,12 @@ rhit.main = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		rhit.currentUser = urlParams.get('user');
-		console.log("on the add page");
+		//console.log("on the add page");
 		let adder = new rhit.singleAddResultController();
 		document.querySelector("#addTag").onclick = (event) => {
 			let tagName = document.querySelector("#inputTag").value;
 			document.querySelector("#inputTag").value = "";
-			console.log(adder);
+			//console.log(adder);
 			adder.add(tagName);
 		}
 		document.querySelector("#save").onclick = (event) => {
@@ -985,13 +997,13 @@ rhit.main = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		rhit.currentUser = urlParams.get('user');
-		console.log("on the edit page");
+		//console.log("on the edit page");
 		let adder = new rhit.singleAddResultController();
 		document.querySelector("#editNameField").value = localStorage.getItem("ideaName");
 		document.querySelector("#editDescField").value = localStorage.getItem("ideaDesc");
 		document.querySelector("#editContentField").value = localStorage.getItem("ideaContent");
 		if(localStorage.getItem("ideaTags").length!=0){
-			console.log("tags", localStorage.getItem("ideaTags").length);
+			//console.log("tags", localStorage.getItem("ideaTags").length);
 			document.querySelector("#editTagSection").appendChild(adder._createTag(localStorage.getItem("ideaTags")));
 			adder.add(localStorage.getItem("ideaTags"));
 		}
@@ -1000,7 +1012,7 @@ rhit.main = function () {
 		document.querySelector("#editTag").onclick = (event) => {
 			let tagName = document.querySelector("#inputTag").value;
 			document.querySelector("#inputTag").value = "";
-			console.log(adder);
+			//console.log(adder);
 			adder.add(tagName);
 		}
 		document.querySelector("#saveEdit").onclick = (event) => {
