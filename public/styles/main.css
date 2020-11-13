@@ -298,6 +298,14 @@ html,body {
   margin:5px;
 }
 
+#picInput{
+  margin:auto; 
+  margin-top: 4px;
+  margin-bottom: 4px;
+  text-overflow:ellipsis;
+  padding:6px;
+}
+
 
 
 #loginButton,
@@ -308,7 +316,8 @@ html,body {
   background: hsl(0, 0%, 87%);
 }
 
-#loginButton{
+#loginButton,
+#createAccountButton{
   background-color: var(--blue);
   color: var(--white);
   border: 2px solid var(--gray);
