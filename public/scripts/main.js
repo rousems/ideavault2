@@ -16,12 +16,14 @@ rhit.KEY_AUTHOR = "userid";
 rhit.KEY_CREATION_DATE = "creationDate";
 rhit.KEY_TAGS = "tags";
 
+rhit.USER_VAULT = "users"
 rhit.KEY_ID = "id";
 rhit.KEY_IP = "ip";
 rhit.KEY_PASS = "password";
 rhit.KEY_USERNAME = "username";
 
 rhit.resultsManager = null;
+rhit.usersManager = null;
 rhit.ideaManager = null;
 rhit.currentUser = null;
 rhit.authManager = null;
@@ -34,12 +36,15 @@ function htmlToElement(html){
 	return template.content.firstChild;
 }
 
+
+////////////
+
 rhit.User = class {
 	id = "";
 	ip = "";
 	password = "";
 	username = "";
-	constructor(id, password, username){
+	constructor(id, ip, password, username){
 		this.id = id;
 		this.password = password;
 		this.username = username;
@@ -59,6 +64,137 @@ rhit.User = class {
 	}
 }
 
+
+rhit.usersController = class {
+
+	constructor(){
+
+		console.log("created usersController");
+
+		
+		//temporary functionality
+		//this.resultList = this.tempList;
+		//list is stuff gotten from firebase
+
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.USER_VAULT);
+		console.log(this._ref);
+		this._unsubscribe = null;
+		//this._name = testname;
+		//console.log("uid", this._name);
+		this.beginListening();
+
+		//by default, show everything;
+		
+
+		//update the view
+		//this.updateView();
+	}
+
+	add(id, ip, username, password) {
+		this._ref.add({
+			[rhit.KEY_ID]: id,
+			[rhit.KEY_IP]: ip,
+			[rhit.KEY_USERNAME]: username,
+			[rhit.KEY_PASS]: password
+		})
+		.then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.error("Error adding document: ", error);
+		});
+	}
+
+	beginListening(){
+
+	}
+
+	testPass(testname, testpass) {
+		console.log("hello at usersmanager");
+		console.log("test name", testname);
+		console.log("test pass", testpass);
+
+		this._name = testname;
+
+
+		//let query =this._ref.orderBy(rhit.KEY_CREATION_DATE, "desc").limit(50);
+		// document.querySelector("#logout").onclick=(event)=>{
+		// 	rhit.authManager.signOut();
+		// };
+
+		if (this._name) {
+			let query = this._ref.limit(50).where(rhit.KEY_USERNAME, "==", this._name);
+	
+		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
+			console.log("calling from begin listening (users)");
+			console.log("query snapshot:", querySnapshot);
+			console.log("query snapshot.docs:", querySnapshot.docs);
+			this._documentSnapshots = querySnapshot.docs;
+			//console.log(querySnapshot.docs);
+			this.userList = [];
+			for(let i = 0; i < this.getlength(); i++){
+				this.userList.push(this.getResultAtIndex(i));
+			}
+			console.log("user list", this.userList);
+
+			//if empty
+			//tell user the name is not valid
+			if (this.userList.length == 0){
+				console.log("No users with that username");
+			}
+			//if not empty
+			//check if user list entry 0 is the same password
+			else{
+				console.log("userlist 0's pass", this.userList[0].getPassword());
+				//console.log("userlist 0's pass", this.userList[0].getPassword());
+				if (testpass == this.userList[0].getPassword()){
+					rhit.authManager.isSignedIn = true;
+					this.currentUser = userList[0];
+					console.log("The current user signed in is ", this.currentUser);
+				}
+				else{
+					console.log("Sign in failed, passwords do not match");
+				}
+			}			
+
+			//user list shows the one user, hopefully
+
+			//this.showList = this.resultList;
+			//changeListener();
+			//// querySnapshot.forEach((doc) => {
+			// 	console.log(doc.data());
+			// });
+		});
+	}
+	}
+	stopListening() { }
+
+	getlength = function() {
+		return this._documentSnapshots.length;
+	}
+	getResultAtIndex(index) {
+		console.log("ref", this._ref);
+		const docSnapshot =this._documentSnapshots[index];
+		console.log("ds", docSnapshot);
+		const usor = new rhit.User(
+			//docSnapshot.id,
+			docSnapshot.get(rhit.KEY_ID),
+			docSnapshot.get(rhit.KEY_IP),
+			docSnapshot.get(rhit.KEY_PASS),
+			docSnapshot.get(rhit.KEY_USERNAME)
+		);
+		console.log("usor", usor);
+		return usor;
+	}
+}
+
+
+
+
+
+
+////////////
 rhit.Result = class {
 	id = "";
 	title = "";
@@ -403,6 +539,11 @@ rhit.AuthenticationManager = class{
 	get uid() {
 		return this._user.uid;
 	}
+
+	setSignedIn(user){
+		this.isSignedIn = true;
+		this._user = user;
+	}
 }
 
 rhit.checkForRedirects=function(){
@@ -438,6 +579,10 @@ rhit.startFirebaseUI = function(){
 rhit.main = function () {
 	console.log("Ready");
 
+
+	//this will get the current submission to the login button passed into it, to test entrance/rejection
+	
+
 	rhit.authManager = new rhit.AuthenticationManager();
 	rhit.authManager.beginListening(()=>{
 		console.log(rhit.authManager.isSignedIn);
@@ -449,6 +594,14 @@ rhit.main = function () {
 		window.location.href = "/login.html";
 		console.log("on the login page");
 	
+	}
+
+	if (document.querySelector("#login")){
+		rhit.usersManager = new rhit.usersController();
+		console.log("on the login page");
+		document.querySelector("#loginButton").onclick = (event) => {
+			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
+		}
 	}
 	
 	if (document.querySelector("#mainPage")){
