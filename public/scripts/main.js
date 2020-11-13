@@ -502,7 +502,7 @@ rhit.resultsController = class {
 		return sortedList;
 	}
 	updateView = function(){
-		console.log("filtering by", document.querySelector("#searchbar").value);
+		//console.log("filtering by", document.querySelector("#searchbar").value);
 		//this.filterBy(document.querySelector("#searchbar").value);
 		this.addCard(this.showList);
 	}
@@ -653,6 +653,7 @@ rhit.main = function () {
 		rhit.checkForRedirects();
 		rhit.startFirebaseUI();
 	});
+	rhit.resultsManager = new rhit.resultsController("testid");
 
 	if (document.querySelector("#firstPage")){
 		window.location.href = "/login.html";
@@ -680,8 +681,7 @@ rhit.main = function () {
 		const urlParams = new URLSearchParams(queryString);
 		rhit.currentUser = urlParams.get('user');
 		console.log("THIS IS THE CURRENT USER", rhit.currentUser);
-		rhit.resultsManager = new rhit.resultsController("testid");
-		//console.log(rc);
+
 		document.querySelector("#searchbutton").onclick = (event) => {
 			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
 		}
@@ -712,6 +712,10 @@ rhit.main = function () {
 			rhit.resultsManager.add(name,desc,tags,content, rhit.currentUser);
 		    adder = null;
 			window.location.href = "/mainPage.html";
+		}
+		
+		document.querySelector("#searchbutton").onclick = (event) => {
+			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
 		}
 	}
 };
