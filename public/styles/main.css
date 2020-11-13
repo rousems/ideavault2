@@ -292,19 +292,21 @@ html,body {
 }
 
 #inputPassword,
+#inputPasswordConfirm,
+#picInput,
 #inputUsername{
   border: var(--gray) solid 2px;
   padding:2px;
   margin:5px;
 }
 
-#picInput{
+/* #picInput{
   margin:auto; 
   margin-top: 4px;
   margin-bottom: 4px;
   text-overflow:ellipsis;
   padding:6px;
-}
+} */
 
 
 

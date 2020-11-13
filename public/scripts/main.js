@@ -19,7 +19,7 @@ rhit.KEY_CREATION_DATE = "creationDate";
 rhit.KEY_TAGS = "tags";
 
 rhit.USER_VAULT = "users"
-rhit.KEY_ID = "id";
+//rhit.KEY_ID = "id";
 rhit.KEY_IP = "ip";
 rhit.KEY_PASS = "password";
 rhit.KEY_USERNAME = "username";
@@ -107,7 +107,7 @@ rhit.usersController = class {
 	getNameAndPfpFromIP(){
 		let gottenUsers = [];
 		
-		let query = this._ref.limit(50).where(rhit.KEY_IP, "==", localStorage.getItem("vistorip"));
+		let query = this._ref.limit(50).where(rhit.KEY_IP, "==", localStorage.getItem("visitorip"));
 		//console.log(query);
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
 			console.log("calling from getnameandpfp (users)");
@@ -125,16 +125,16 @@ rhit.usersController = class {
 			}
 			else {
 				if(!document.querySelector("#signUpPage")){
-					localStorage.clear();
-					window.location.href = "/accountSetup.html";
+					//localStorage.clear();
+					//window.location.href = "/accountSetup.html";
 				}
 			}
 		});
 	}
 
-	add(id, ip, username, password, pfp) {
+	add(ip, username, password, pfp) {
 		this._ref.add({
-			[rhit.KEY_ID]: id,
+			//[rhit.KEY_ID]: id,
 			[rhit.KEY_IP]: ip,
 			[rhit.KEY_USERNAME]: username,
 			[rhit.KEY_PASS]: password,
@@ -204,6 +204,7 @@ rhit.usersController = class {
 				}
 				else{
 					console.log("Sign in failed, passwords do not match");
+					window.alert("Sign in failed, passwords do not match");
 				}
 			
 			}			
@@ -227,9 +228,11 @@ rhit.usersController = class {
 		console.log("ref", this._ref);
 		const docSnapshot =this._documentSnapshots[index];
 		console.log("ds", docSnapshot);
+		console.log("key:", docSnapshot.key);
 		const usor = new rhit.User(
 			//docSnapshot.id,
-			docSnapshot.get(rhit.KEY_ID),
+			//docSnapshot.get(rhit.KEY_ID),
+			docSnapshot.key,
 			docSnapshot.get(rhit.KEY_IP),
 			docSnapshot.get(rhit.KEY_PASS),
 			docSnapshot.get(rhit.KEY_USERNAME),
@@ -670,13 +673,13 @@ rhit.AuthenticationManager = class{
 }
 
 rhit.checkForRedirects=function(){
-	console.log("is signed in?",rhit.authManager.isSignedIn);
-	console.log("the current user is", rhit.authManager);
-	if(document.querySelector("#login") && /*rhit.authManager.isSignedIn*/ rhit.authManager.get_current_user() != null){
+	//console.log("is signed in?",rhit.authManager.isSignedIn);
+	//console.log("the current user is", rhit.authManager);
+	if(document.querySelector("#login") && /*rhit.authManager.isSignedIn*/ localStorage.getItem("username")!= null){
 		//console.log("hello");
 		window.location.href = "/mainPage.html";
 	}
-	if(!document.querySelector("#login") && /*!rhit.authManager.isSignedIn &&*/ rhit.authManager.get_current_user() == null && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
+	if(!document.querySelector("#login") && /*!rhit.authManager.isSignedIn &&*/ localStorage.getItem("username") == null && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
 		console.log("hello");
 		//window.location.href = "/login.html";
 	}
@@ -708,6 +711,8 @@ rhit.main = function () {
 
 	rhit.usersManager = new rhit.usersController();
 
+	rhit.checkForRedirects();
+
 	$.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
 		//console.log("data", data);
 		//console.log("index of ip", data.indexOf("ip"));
@@ -731,12 +736,13 @@ rhit.main = function () {
 	}
 	
 	if (document.querySelector(".profilepics")){
-		document.querySelectorAll(".profilepics").forEach(element => element.src = `images/${localStorage.getItem("pfp")}`);
+		document.querySelectorAll(".profilepics").forEach(element => element.src = localStorage.getItem("pfp"));
 		if (document.querySelector("#login")){
 			console.log(localStorage);
 			console.log(localStorage.getItem("visitorpfp"));
 			console.log(localStorage.getItem("visitorusername"));
-			document.querySelector("#bigProfilePic").src = `images/${localStorage.getItem("visitorpfp")}`;
+			//document.querySelector("#bigProfilePic").src = `images/${localStorage.getItem("visitorpfp")}`;
+			document.querySelector("#bigProfilePic").src = localStorage.getItem("visitorpfp");
 			document.querySelector("#displayUsername").innerHTML = localStorage.getItem("visitorusername");
 		}
 	}
@@ -770,14 +776,14 @@ rhit.main = function () {
 		
 		console.log("on the login page");
 		document.querySelector("#loginButton").onclick = (event) => {
-			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
+			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value)
 			setTimeout(
 				function() {
-				  window.location.href = `/mainPage.html?user=${rhit.currentUser.getId()}`;
+				  window.location.href = `/mainPage.html`;
 				}, 500);
+			}
 			
-			//rhit.checkForRedirects();
-		}
+			rhit.checkForRedirects();
 
 	}
 	
@@ -792,8 +798,15 @@ rhit.main = function () {
 			// 	}, 500);
 			
 			//rhit.checkForRedirects();
-
-			console.log(document.querySelector("#picInput").value);
+			let pass = document.querySelector("#inputPassword").value;
+			let passconfirm = document.querySelector("#inputPasswordConfirm").value;
+			if (pass == passconfirm){
+				rhit.usersManager.add(localStorage.getItem("visitorip"), document.querySelector("#inputUsername").value, document.querySelector("#inputPassword").value, document.querySelector("#picInput").value);
+			}
+			else{
+				window.alert("Passwords do not match");
+			}
+			//console.log(document.querySelector("#picInput").value);
 		}
 		
 	}
@@ -809,7 +822,7 @@ rhit.main = function () {
 			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
 		}
 		document.querySelector("#addbutton").onclick = (event) => {
-			window.location.href = `/addIdea.html?user=${rhit.currentUser}`;
+			window.location.href = `/addIdea.html`;
 		}
 		// document.querySelector("#username").onclick = (event) => {
 			
