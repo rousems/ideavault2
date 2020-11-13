@@ -710,7 +710,7 @@ rhit.main = function () {
 		//console.log("data", data);
 		//console.log("index of ip", data.indexOf("ip"));
 		let ipspot = data.indexOf("ip");
-		data = data.substring(ipspot);
+		data = data.substring(ipspot+3);
 		//console.log("trimmeddata", data);
 		let nextspace = data.indexOf("\n");
 		data = data.substring(0, nextspace);
