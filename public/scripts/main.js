@@ -295,6 +295,14 @@ rhit.singleAddResultController = class {
 	constructor(){
 
 	}
+		//this.id = id;
+		//this._documentSnapshots = [];
+		
+		//console.log(this._ref);
+		//this._unsubscribe = null;
+		//this._uid = uid;
+		//console.log("uid", this._uid);
+		//this.beginListening(this.updateView.bind(this));
 	// constructor(idea){
 	// 	this.name = idea.getName();
 	// 	this.description = idea.getDesc()
@@ -338,7 +346,15 @@ rhit.singleAddResultController = class {
 	}
 
 	delete = function(){
-		
+		console.log("are we actually doing anything?");
+		this._ref = firebase.firestore().collection(rhit.IDEA_VAULT).doc(localStorage.getItem("ideaid"));
+		console.log(this._ref);
+		this._ref.delete().then(function() {
+			console.log("Document successfully deleted!");
+			window.location.href = "/mainPage.html";
+		}).catch(function(error) {
+			console.error("Error removing document: ", error);
+		});
 	}
 
 }
@@ -624,6 +640,7 @@ rhit.resultsController = class {
 		for(let i = 0; i < sList.length; i++){
 			let newCard = document.querySelector("#resultsbox").appendChild(this._createResultCard(sList[i].getTitle(), sList[i].getDesc(), sList[i].getDate(), sList[i].getTags()));
 			newCard.onclick=(event)=>{
+				localStorage.setItem("ideaid",sList[i].getId());
 				localStorage.setItem("ideaName",sList[i].getTitle());
 				localStorage.setItem("ideaDesc",sList[i].getDesc());
 				localStorage.setItem("ideaContent",sList[i].getContent());
@@ -796,6 +813,7 @@ rhit.main = function () {
 		}
 		document.querySelector("#deleteButton").onclick=(event)=>{
 			let result = new rhit.singleAddResultController();
+			result.delete();
 		}
 	}
 
