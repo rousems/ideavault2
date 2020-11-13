@@ -149,15 +149,17 @@ rhit.usersController = class {
 				console.log("userlist 0's pass", this.userList[0].getPassword());
 				//console.log("userlist 0's pass", this.userList[0].getPassword());
 				if (testpass == this.userList[0].getPassword()){
-					rhit.authManager.isSignedIn = true;
-					this.currentUser = userList[0];
-					console.log("The current user signed in is ", this.currentUser);
+					rhit.authManager.setSignedIn(this.userList[0]);
+					rhit.currentUser = this.userList[0];
+					console.log("The current user signed in is ", rhit.currentUser);
+					return true;
 				}
 				else{
 					console.log("Sign in failed, passwords do not match");
 				}
+			
 			}			
-
+			return false;
 			//user list shows the one user, hopefully
 
 			//this.showList = this.resultList;
@@ -236,9 +238,61 @@ rhit.Result = class {
 	}
 }
 
+rhit.singleAddResultController = class {
+	tagAddList = [];
+	constructor(){
+
+	}
+	// constructor(idea){
+	// 	this.name = idea.getName();
+	// 	this.description = idea.getDesc()
+	// 	this.tags = idea.getTags();
+	// 	this.content = idea.getContent();
+	// }
+
+	add = function(name){
+		this.tagAddList.push(name);
+		this.updateView();
+	}
+
+	updateView(){
+		this.addTag(this.tagAddList);
+	}
+
+	addTag = function(sList){
+		console.log(sList);
+		let numChildren = document.querySelector("#addTagSection").childElementCount;
+		//maybe refine removing children later
+		console.log("children", numChildren);
+		for(let i = 0; i < numChildren-1; i++){
+			console.log("removing: ", document.querySelector("#addTagSection").lastChild);
+			document.querySelector("#addTagSection").removeChild(document.querySelector("#addTagSection").lastChild);
+			// while (document.querySelector("#resultsbox").lastChild) {
+			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
+			// }
+		}
+		for(let i = 0; i < sList.length; i++){
+			console.log("appending");
+			document.querySelector("#addTagSection").appendChild(this._createTag(sList[i]));
+		}
+	}
+
+	_createTag = function(name){
+		return htmlToElement(`
+		<div id="tag">
+			  ${name}
+		</div>`
+		);
+	}
+
+}
+
 rhit.resultsController = class {
 
 	//this is a temporary list of results that is used to generate the ideas
+
+	addTagList = [];
+
 	resultList = [];
 
 	showList = [];
@@ -268,13 +322,13 @@ rhit.resultsController = class {
 		//this.updateView();
 	}
 
-	add(title, description, tags, content) {
+	add(title, description, tags, content, usid) {
 		this._ref.add({
 			[rhit.KEY_TITLE]: title,
 			[rhit.KEY_DESC]: description,
 			[rhit.KEY_TAGS]: tags,
 			[rhit.KEY_CONTENT]: content,
-			[rhit.KEY_AUTHOR]: rhit.KEY_ID,
+			[rhit.KEY_AUTHOR]: usid,
 			[rhit.KEY_CREATION_DATE]: firebase.firestore.Timestamp.now()
 		})
 		.then(function (docRef) {
@@ -284,6 +338,8 @@ rhit.resultsController = class {
 			console.error("Error adding document: ", error);
 		});
 	}
+
+	
 
 	beginListening(changeListener) {
 
@@ -540,18 +596,26 @@ rhit.AuthenticationManager = class{
 		return this._user.uid;
 	}
 
+	get_current_user(){
+		return this._user;
+	}
+
 	setSignedIn(user){
-		this.isSignedIn = true;
+		//this.isSignedIn = true;
 		this._user = user;
 	}
 }
 
 rhit.checkForRedirects=function(){
-	if(document.querySelector("#login") && rhit.authManager.isSignedIn){
+	console.log("is signed in?",rhit.authManager.isSignedIn);
+	console.log("the current user is", rhit.authManager);
+	if(document.querySelector("#login") && /*rhit.authManager.isSignedIn*/ rhit.authManager.get_current_user() != null){
+		//console.log("hello");
 		window.location.href = "/mainPage.html";
 	}
-	if(!document.querySelector("#login") && !rhit.authManager.isSignedIn && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
-		window.location.href = "/login.html";
+	if(!document.querySelector("#login") && /*!rhit.authManager.isSignedIn &&*/ rhit.authManager.get_current_user() == null && !document.querySelector("#addAccountPage") && !document.querySelector("#signUpPage")){
+		console.log("hello");
+		//window.location.href = "/login.html";
 	}
 	// if(document.querySelector("#addAccountPage") && !rhit.authManager.isSignedIn){
 	// 	window.location.href = "/addAccount.html";
@@ -585,7 +649,7 @@ rhit.main = function () {
 
 	rhit.authManager = new rhit.AuthenticationManager();
 	rhit.authManager.beginListening(()=>{
-		console.log(rhit.authManager.isSignedIn);
+		//console.log(rhit.authManager.isSignedIn);
 		rhit.checkForRedirects();
 		rhit.startFirebaseUI();
 	});
@@ -601,24 +665,52 @@ rhit.main = function () {
 		console.log("on the login page");
 		document.querySelector("#loginButton").onclick = (event) => {
 			rhit.usersManager.testPass(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
+			setTimeout(
+				function() {
+				  window.location.href = `/mainPage.html?user=${rhit.currentUser.getId()}`;
+				}, 5000);
+			
+			//rhit.checkForRedirects();
 		}
 	}
 	
 	if (document.querySelector("#mainPage")){
-		var rc = new rhit.resultsController("testid");
-		console.log(rc);
+		//console.log("are we on the main page?");
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		rhit.currentUser = urlParams.get('user');
+		console.log("THIS IS THE CURRENT USER", rhit.currentUser);
+		rhit.resultsManager = new rhit.resultsController("testid");
+		//console.log(rc);
 		document.querySelector("#searchbutton").onclick = (event) => {
-			rc.filterBy(document.querySelector("#searchbar").value);
+			rhit.resultsManager.filterBy(document.querySelector("#searchbar").value);
 		}
 		document.querySelector("#addbutton").onclick = (event) => {
-			window.location.href = "/addIdea.html";
+			window.location.href = `/addIdea.html?user=${rhit.currentUser}`;
 		}
-		document.querySelector("#username").onclick = (event) => {
+		// document.querySelector("#username").onclick = (event) => {
 			
-		}
+		// }
 	}
 	if (document.querySelector("#addIdea")){
-		document.querySelector("#backbutton").onclick = (event) => {
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		rhit.currentUser = urlParams.get('user');
+		console.log("on the add page");
+		let adder = new rhit.singleAddResultController();
+		document.querySelector("#addTag").onclick = (event) => {
+			let tagName = document.querySelector("#inputTag").value;
+			document.querySelector("#inputTag").value = "";
+			console.log(adder);
+			adder.add(tagName);
+		}
+		document.querySelector("#backsavebutton").onclick = (event) => {
+			let name = document.querySelector("#addNameField").value;
+			let desc = document.querySelector("#addDescField").value;
+			let content = document.querySelector("#addContentField").value;
+			let tags = adder.tagAddList;
+			rhit.resultsManager.add(name,desc,tags,content, rhit.currentUser);
+		    adder = null;
 			window.location.href = "/mainPage.html";
 		}
 	}

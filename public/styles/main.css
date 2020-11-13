@@ -208,6 +208,13 @@ html,body {
     border:2px solid var(--gray);
   }
 
+  #tag {
+    border: 2px solid var(--gray);
+    background-color: var(--lightblue);
+    border-radius: 6px;
+    padding: 0px 4px;
+  }
+
   #addContentField, #editContentField {
     position: relative;
     width: 100%;
