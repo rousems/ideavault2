@@ -106,8 +106,8 @@ rhit.usersController = class {
 
 	getNameAndPfpFromIP(){
 		let gottenUsers = [];
-		//where(rhit.KEY_IP, "==", localStorage.getItem("vistorip"))
-		let query = this._ref.limit(50);
+		
+		let query = this._ref.limit(50).where(rhit.KEY_IP, "==", localStorage.getItem("vistorip"));
 		//console.log(query);
 		this._unsubscribe = query.onSnapshot((querySnapshot) =>{
 			console.log("calling from getnameandpfp (users)");
@@ -124,8 +124,10 @@ rhit.usersController = class {
 				localStorage.setItem("visitorpfp", gottenUsers[0].getPfp());
 			}
 			else {
-				localStorage.clear();
-				window.location.href = "/accountSetup.html";
+				if(!document.querySelector("#signUpPage")){
+					localStorage.clear();
+					window.location.href = "/accountSetup.html";
+				}
 			}
 		});
 	}
@@ -776,8 +778,26 @@ rhit.main = function () {
 			
 			//rhit.checkForRedirects();
 		}
+
 	}
 	
+	if (document.querySelector("#signUpPage")){
+		
+		console.log("on the setUpPage");
+		document.querySelector("#createAccountButton").onclick = (event) => {
+			// rhit.usersManager.add(document.querySelector("#displayUsername").innerHTML, document.querySelector("#inputPassword").value);
+			// setTimeout(
+			// 	function() {
+			// 	  window.location.href = `/mainPage.html?user=${rhit.currentUser.getId()}`;
+			// 	}, 500);
+			
+			//rhit.checkForRedirects();
+
+			console.log(document.querySelector("#picInput").value);
+		}
+		
+	}
+
 	if (document.querySelector("#mainPage")){
 		//console.log("are we on the main page?");
 		const queryString = window.location.search;
