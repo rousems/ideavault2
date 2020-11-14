@@ -312,6 +312,7 @@ rhit.singleAddResultController = class {
 
 	add = function(name){
 		this.tagAddList.push(name);
+		console.log("addtaglist", this.tagAddList);
 		this.updateView();
 	}
 
@@ -324,23 +325,33 @@ rhit.singleAddResultController = class {
 
 	addTag = function(sList){
 		//console.log(sList);
-		let numChildren = document.querySelector("#addTagSection").childElementCount;
+		let numChildren = 0;
+		if (document.querySelector("#viewIdea"))
+			numChildren = document.querySelector("#viewTagSection").childElementCount;
+		else numChildren = document.querySelector("#addTagSection").childElementCount;
 		//maybe refine removing children later
 		//console.log("children", numChildren);
 		for(let i = 0; i < numChildren-1; i++){
 			//console.log("removing: ", document.querySelector("#addTagSection").lastChild);
-			document.querySelector("#addTagSection").removeChild(document.querySelector("#addTagSection").lastChild);
+			if (document.querySelector("#viewIdea"))
+				document.querySelector("#viewTagSection").removeChild(document.querySelector("#viewTagSection").lastChild);
+			else document.querySelector("#addTagSection").removeChild(document.querySelector("#addTagSection").lastChild);
 			// while (document.querySelector("#resultsbox").lastChild) {
 			// 	document.querySelector("#resultsbox").removeChild(document.querySelector("#resultsbox").lastChild);
 			// }
 		}
 		for(let i = 0; i < sList.length; i++){
 			//console.log("appending");
-			document.querySelector("#addTagSection").appendChild(this._createTag(sList[i]));
+			if (document.querySelector("#viewIdea"))
+				document.querySelector("#viewTagSection").appendChild(this._createTag(sList[i]));
+			else document.querySelector("#addTagSection").appendChild(this._createTag(sList[i]));
 		}
 	}
 
 	editTag = function(sList){
+		if (this.tagAddList.length == 0){
+			this.tagAddList = sList;
+		}
 		//console.log(sList);
 		let numChildren = document.querySelector("#editTagSection").childElementCount;
 		//maybe refine removing children later
@@ -854,9 +865,24 @@ rhit.main = function () {
 		document.querySelector("#descriptioncontainer").innerHTML = localStorage.getItem("ideaDesc");
 		document.querySelector("#contentcontainer").innerHTML = localStorage.getItem("ideaContent");
 		let result = new rhit.singleAddResultController();
-		if(localStorage.getItem("ideaTags").length!=0){
-			document.querySelector("#viewTagSection").appendChild(result._createTag(localStorage.getItem("ideaTags")));
+		let tagstring = localStorage.getItem("ideaTags");
+		let tagarray = [];
+		console.log(tagstring);
+		if (tagstring!=""){
+		while(tagstring.indexOf(',') != -1){
+			console.log(tagstring);
+			let indextag = tagstring.indexOf(',');
+			tagarray.push(tagstring.substring(0,indextag));
+			tagstring = tagstring.substring(indextag+1);
 		}
+		console.log(tagstring);
+		tagarray.push(tagstring);
+		console.log(tagarray);
+		if(tagarray.length!=0){
+			//document.querySelector("#viewTagSection").appendChild(result.addTag(tagarray));
+			result.addTag(tagarray);
+		}
+	}
 		document.querySelector("#backbutton").onclick=(event)=>{
 			window.location.href = "/mainPage.html";
 		}
@@ -1002,12 +1028,31 @@ rhit.main = function () {
 		document.querySelector("#editNameField").value = localStorage.getItem("ideaName");
 		document.querySelector("#editDescField").value = localStorage.getItem("ideaDesc");
 		document.querySelector("#editContentField").value = localStorage.getItem("ideaContent");
-		if(localStorage.getItem("ideaTags").length!=0){
-			//console.log("tags", localStorage.getItem("ideaTags").length);
-			document.querySelector("#editTagSection").appendChild(adder._createTag(localStorage.getItem("ideaTags")));
-			adder.add(localStorage.getItem("ideaTags"));
-		}
+		// if(localStorage.getItem("ideaTags").length!=0){
+		// 	//console.log("tags", localStorage.getItem("ideaTags").length);
+		// 	document.querySelector("#editTagSection").appendChild(adder._createTag(localStorage.getItem("ideaTags")));
+		// 	adder.add(localStorage.getItem("ideaTags"));
+		// }
 		
+		let tagstring = localStorage.getItem("ideaTags");
+		let tagarray = [];
+		console.log(tagstring);
+		if (tagstring!=""){
+		while(tagstring.indexOf(',') != -1){
+			console.log(tagstring);
+			let indextag = tagstring.indexOf(',');
+			tagarray.push(tagstring.substring(0,indextag));
+			tagstring = tagstring.substring(indextag+1);
+		}
+		console.log(tagstring);
+		tagarray.push(tagstring);
+		console.log(tagarray);
+		if(tagarray.length!=0){
+			console.log("huh");
+			//document.querySelector("#viewTagSection").appendChild(result.addTag(tagarray));
+			adder.editTag(tagarray);
+		}
+	}
 
 		document.querySelector("#editTag").onclick = (event) => {
 			let tagName = document.querySelector("#inputTag").value;
