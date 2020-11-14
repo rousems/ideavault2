@@ -124,7 +124,7 @@ rhit.usersController = class {
 				localStorage.setItem("visitorpfp", gottenUsers[0].getPfp());
 			}
 			else {
-				if(!document.querySelector("#signUpPage") && !document.querySelector("#addAccountPage")){
+				if(!document.querySelector("#signUpPage") && !document.querySelector("#addAccountPage") && !document.querySelector("#mainPage")){
 					localStorage.clear();
 					window.location.href = "/accountSetup.html";
 				}
@@ -874,7 +874,7 @@ rhit.main = function () {
 			let uname = document.querySelector("#inputUsername").value;
 			let upass = document.querySelector("#inputPassword").value;
 			let mngr = new this.usersController();
-			//mngr.testPass(uname, upass);
+			mngr.testPass(uname, upass);
 			setTimeout(
 				function() {
 				  window.location.href = `/mainPage.html`;
