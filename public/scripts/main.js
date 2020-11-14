@@ -126,7 +126,7 @@ rhit.usersController = class {
 			else {
 				if(!document.querySelector("#signUpPage") && !document.querySelector("#addAccountPage") && !document.querySelector("#mainPage")){
 					localStorage.clear();
-					window.location.href = "/accountSetup.html";
+					window.location.href = "/accountSetUp.html";
 				}
 			}
 		});
